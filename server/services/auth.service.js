@@ -10,6 +10,7 @@ import {
 import bcrypt from 'bcrypt';
 import { env } from '../config/index.js';
 
+// Validate required environment variables
 if (!env.jwt.secret || !env.jwt.expires || !env.jwt.rememberMe) {
   throw createError(
     'Missing one or more required JWT environment variables.',
@@ -20,8 +21,10 @@ if (!env.jwt.secret || !env.jwt.expires || !env.jwt.rememberMe) {
   );
 }
 
+// import jwt after env validation to avoid unnecessary imports if env variables are missing
 import jwt from 'jsonwebtoken';
 
+// Set up the encryption public key from environment variables
 const pubkey = env.encryption.pubkey;
 
 // Validate pubkey
@@ -31,7 +34,7 @@ if (!pubkey) {
   });
 }
 
-export const loginSuperAdminService = async (payload) => {
+export const orgAdminLoginService = async (payload) => {
   try {
     // Validate payload before decryption
     if (!payload || typeof payload !== 'string') {
@@ -44,12 +47,31 @@ export const loginSuperAdminService = async (payload) => {
     const decryptedData = await decryptService(payload);
     // Check if decryption was successful and contains the required fields
     if (!decryptedData.user_email || !decryptedData.user_password) {
-      throw createError('Service: Decryption failed or missing credentials.', 400, {
-        code: 'DECRYPTION_FAILED',
-      });
+      throw createError(
+        'Service: Decryption failed or missing credentials.',
+        400,
+        {
+          code: 'DECRYPTION_FAILED',
+        }
+      );
     }
     // Extract user_email, user_password, and rememberMe from decrypted data
-    const { user_email, user_password, rememberMe } = decryptedData;
+    const { user_email, user_password, user_confirm_password, rememberMe } =
+      decryptedData;
+
+    // Validate required fields
+    if (!user_email || !user_password || !user_confirm_password) {
+      throw createError('Missing required login credentials.', 400, {
+        code: 'MISSING_CREDENTIALS',
+      });
+    }
+
+    // Validate password match
+    if (user_password !== user_confirm_password) {
+      throw createError('Passwords do not match.', 401, {
+        code: 'PASSWORD_MISMATCH',
+      });
+    }
 
     // rate limiting logic
     checkRateLimit(user_email);
@@ -58,7 +80,7 @@ export const loginSuperAdminService = async (payload) => {
     const sequelize = UserModel.sequelize;
     const [decryptedExpr] = decryptSensitiveData('user_email', pubkey);
     const user = await UserModel.findOne({
-      attributes: ['user_id', [decryptedExpr, 'user_email'], 'user_password'],
+      attributes: ['user_id', [decryptedExpr, 'user_email'], 'user_password', 'org_id'],
       where: sequelize.where(decryptedExpr, user_email),
     });
 
@@ -94,6 +116,7 @@ export const loginSuperAdminService = async (payload) => {
     const responsePayload = {
       token: encryptService(token),
       userId: encryptService(user.user_id),
+      orgId: encryptService(user.org_id),
     };
 
     // validate encrypted payload structure
@@ -115,7 +138,7 @@ export const loginSuperAdminService = async (payload) => {
     };
   } catch (error) {
     // Handle errors and log them for debugging
-    logServiceError('loginSuperAdminService', error);
+    logServiceError('orgAdminLoginService', error);
     throw createError(
       error.message || 'An error occurred during login.',
       error.status || 500,

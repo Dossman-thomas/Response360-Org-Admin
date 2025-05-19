@@ -1,13 +1,13 @@
-import { loginSuperAdminService } from '../services/index.js';
+import { orgAdminLoginService } from '../services/index.js';
 import { messages } from '../messages/index.js';
 import { response } from '../utils/index.js';
 
-export const loginSuperAdminController = async (req, res) => {
+export const orgAdminLoginController = async (req, res) => {
   const { payload } = req.body;
 
   try {
-    // Authenticate super admin
-    const user = await loginSuperAdminService(payload);
+    // Authenticate org admin
+    const user = await orgAdminLoginService(payload);
 
     // Send success response with the encrypted token
     return response(res, {
@@ -17,7 +17,7 @@ export const loginSuperAdminController = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      'Error in loginSuperAdminController:',
+      'Error in orgAdminLoginController:',
       error.message,
       error.stack
     );

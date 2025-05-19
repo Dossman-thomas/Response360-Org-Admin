@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  orgAdminLoginController,
   forgotPasswordController,
   passwordResetController,
   verifyPasswordController,
@@ -7,6 +8,8 @@ import {
 import { validatePayload } from '../middleware/index.js';
 
 export const authRouter = Router();
+
+authRouter.post('/org-admin-login', validatePayload, orgAdminLoginController); // endpoint: /api/auth/org-admin-login
 
 authRouter.post('/forgot-password', validatePayload, forgotPasswordController); // endpoint: /api/auth/forgot-password
 

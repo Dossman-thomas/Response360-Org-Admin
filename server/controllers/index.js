@@ -1,5 +1,7 @@
 export { encryptController, decryptController } from './common.controller.js';
 
+export { orgAdminLoginController } from './auth.controller.js';
+
 export {
   createOrganizationController,
   getAllOrganizationsController,
