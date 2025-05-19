@@ -1,0 +1,18 @@
+{
+  "name": "response360_org_admin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "client": "cd client && ng serve",
+    "server": "cd server && nodemon src/index.js",
+    "seed": "cd server && node ./database/seeds/index.js",
+    "start": "concurrently \"npm run client\" \"npm run server\"",
+    "install": "concurrently \"npm install\" \"cd client && npm install\" \"cd server && npm install\""
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9"
+  }
+}

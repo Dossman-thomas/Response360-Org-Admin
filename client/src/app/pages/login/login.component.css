@@ -1,0 +1,9 @@
+#login-card {
+    box-shadow: -3px 4px 11.5px 10px rgba(16, 16, 16, 0.3);
+    border-radius: 24px;
+}
+
+#remember-me:checked {
+    background-color: var(--action-blue);
+    color: var(--primary-text);
+}

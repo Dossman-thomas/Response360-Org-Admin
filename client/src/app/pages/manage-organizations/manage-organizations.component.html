@@ -1,0 +1,108 @@
+<div class="container mt-4 px-4">
+  <!-- Page Header -->
+  <h6 class="secondary-text">Manage Organizations ></h6>
+
+  <!-- Toolbar with Search and New Button -->
+  <div
+    class="d-flex justify-content-between align-items-center p-2 mt-3 mb-1 gradient rounded-1"
+  >
+    <!-- Search Bar -->
+    <input
+      type="text"
+      class="form-control w-25"
+      placeholder="Search"
+      [(ngModel)]="searchQuery"
+      (input)="onSearch()"
+    />
+
+    <!-- New Organization Button -->
+    <button class="btn action-btn" (click)="onNewOrganization()">New</button>
+  </div>
+
+  <!-- Kendo Grid Placeholder -->
+  <kendo-grid
+    [data]="gridData"
+    [pageSize]="state.take"
+    [skip]="state.skip"
+    [sortable]="true"
+    [sort]="state.sort"
+    filterable="menu"
+    [filter]="state.filter"
+    [pageable]="{ buttonCount: 5, pageSizes: [5, 10, 25, 50] }"
+    (dataStateChange)="dataStateChange($event)"
+  >
+    <!-- Column Definitions -->
+    <kendo-grid-column field="org_name" title="Name"></kendo-grid-column>
+    <kendo-grid-column field="org_email" title="Email"></kendo-grid-column>
+    <kendo-grid-column
+      field="org_phone_number"
+      title="Phone Number"
+    ></kendo-grid-column>
+    <kendo-grid-column field="org_status" title="Status">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{ dataItem.org_status ? 'Active' : 'Deactivated' }}
+      </ng-template>
+    </kendo-grid-column>
+    
+
+    <!-- Action Buttons -->
+    <kendo-grid-column title="Action" [width]="150">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button
+          class="btn btn-sm btn-outline-primary me-2"
+          (click)="onEditOrganization(dataItem.org_id)"
+        >
+          Edit
+        </button>
+        <button
+          class="btn btn-sm btn-outline-danger"
+          (click)="onDeleteOrganization(dataItem.org_id)"
+        >
+          Delete
+        </button>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<!-- Modal for Deleting User -->
+<div
+  class="modal fade"
+  [ngClass]="{ 'show d-block': showDeleteModal }"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content gradient">
+      <div class="modal-header">
+        <h5 class="modal-title primary-text">Confirm Delete</h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="onCancelDelete()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="primary-text">Are you sure you want to delete this Organization?</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn confirm-delete-btn primary-red primary-text"
+          (click)="onConfirmDelete()"
+        >
+          Delete
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="onCancelDelete()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

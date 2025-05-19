@@ -1,0 +1,190 @@
+<div class="container mt-4 px-4">
+  <h6 class="secondary-text">My Account ></h6>
+
+  <div class="card w-75 mt-4 p-4 gradient">
+    <div class="d-flex justify-content-between">
+      <h4 class="primary-text">Super Admin Information</h4>
+      <!-- Change Password Toggle -->
+      <div class="d-flex justify-content-center">
+        <button class="btn action-btn" (click)="togglePasswordModal()">
+          <!-- {{ showPasswordModal ? 'Cancel' : 'Change Password' }} -->
+          Change Password
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Info Row -->
+    <div class="d-flex align-items-start mt-4 gap-4">
+      <!-- Placeholder Logo with User Icon -->
+      <div
+        class="d-flex justify-content-center align-items-center rounded border bg-light"
+        style="width: 120px; height: 120px; opacity: 0.3"
+      >
+        <i class="fa fa-user fa-3x text-dark"></i>
+      </div>
+
+      <!-- User Details -->
+      <div>
+        <p class="primary-text">
+          <strong>First Name:</strong> {{ userData.first_name || 'N/A' }}
+        </p>
+        <p class="primary-text">
+          <strong>Last Name:</strong> {{ userData.last_name || 'N/A' }}
+        </p>
+        <p class="primary-text">
+          <strong>Email:</strong> {{ userData.user_email || 'N/A' }}
+        </p>
+        <p class="primary-text">
+          <strong>Phone Number:</strong>
+          {{ userData.user_phone_number || 'N/A' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Changing Password -->
+<div
+  class="modal fade"
+  [ngClass]="{ 'show d-block': showPasswordModal }"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered responsive-modal" role="document">
+    <div class="modal-content gradient p-4">
+      <div class="modal-header">
+        <h5 class="modal-title primary-text">Change Password</h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="togglePasswordModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- PASSWORD FORM FROM ORIGINAL CARD -->
+        <form
+          [formGroup]="passwordForm"
+          (ngSubmit)="updatePassword()"
+          class="d-flex flex-column"
+        >
+          <!-- Current Password -->
+          <div class="input-group w-100 my-2">
+            <label
+              class="input-group-text w-25 justify-content-center"
+              for="currentPassword"
+              >Current Password:</label
+            >
+            <input
+              [type]="showCurrentPassword ? 'text' : 'password'"
+              id="currentPassword"
+              class="form-control"
+              formControlName="currentPassword"
+            />
+            <span
+              class="input-group-text"
+              (click)="toggleCurrentPasswordVisibility()"
+              style="cursor: pointer"
+            >
+              <i
+                class="fa"
+                [ngClass]="showCurrentPassword ? 'fa-eye' : 'fa-eye-slash'"
+              ></i>
+            </span>
+          </div>
+          <div
+            *ngIf="
+              passwordForm.get('currentPassword')?.invalid &&
+              (passwordForm.get('currentPassword')?.dirty ||
+                passwordForm.get('currentPassword')?.touched)
+            "
+            class="text-danger"
+          >
+            Current password is required.
+          </div>
+          <div *ngIf="incorrectCurrentPasswordError" class="text-danger">
+            Current password is incorrect. Could not update password.
+          </div>
+
+          <!-- New Password -->
+          <div class="input-group w-100 my-2">
+            <label
+              class="input-group-text w-25 justify-content-center"
+              for="newPassword"
+              >New Password:</label
+            >
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              id="newPassword"
+              class="form-control"
+              formControlName="newPassword"
+            />
+            <span
+              class="input-group-text"
+              (click)="toggleNewPasswordVisibility()"
+              style="cursor: pointer"
+            >
+              <i
+                class="fa"
+                [ngClass]="showNewPassword ? 'fa-eye' : 'fa-eye-slash'"
+              ></i>
+            </span>
+          </div>
+          <div
+            *ngIf="
+              passwordForm.get('newPassword')?.invalid &&
+              (passwordForm.get('newPassword')?.dirty ||
+                passwordForm.get('newPassword')?.touched)
+            "
+            class="text-danger"
+          >
+            Password must be at least 6 characters.
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="input-group w-100 my-3">
+            <label
+              class="input-group-text w-25 justify-content-center"
+              for="confirmPassword"
+              >Confirm Password:</label
+            >
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              class="form-control"
+              formControlName="confirmPassword"
+            />
+            <span
+              class="input-group-text"
+              (click)="toggleConfirmPasswordVisibility()"
+              style="cursor: pointer"
+            >
+              <i
+                class="fa"
+                [ngClass]="showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'"
+              ></i>
+            </span>
+          </div>
+          <div
+            *ngIf="passwordForm.errors?.['mismatch'] && (passwordForm.get('confirmPassword')?.dirty || passwordForm.get('confirmPassword')?.touched)"
+            class="text-danger"
+          >
+            Passwords must match.
+          </div>
+
+          <!-- Submit -->
+          <div class="d-flex justify-content-center w-100 mt-4 action-btn">
+            <button
+              type="submit"
+              class="btn w-100"
+              [disabled]="passwordForm.invalid"
+            >
+              Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

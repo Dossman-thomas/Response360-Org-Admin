@@ -1,0 +1,76 @@
+/* ========== CSS RESET ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Root */
+:root {
+  --primary-red: #FF4C4C;
+  --primary-red-hover: #fc6161;
+  --action-blue: #3e83b4;
+  --action-blue-hover: #6792b1;
+  --primary-bg: #242424;
+  --secondary-bg: #3C3C3C;
+  --primary-text: #FFFFFF;
+  --secondary-text: #CACACA;
+}
+
+body {
+  background-color: var(--primary-bg);
+}
+
+.action-btn {
+  background-color: var(--action-blue);
+  color: var(--primary-text);;
+}
+
+.action-btn:hover {
+  background-color: var(--action-blue-hover);
+  color: var(--primary-text);
+}
+
+.primary-bg {
+  background-color: var(--primary-bg);
+}
+
+.secondary-bg {
+  background-color: var(--secondary-bg);
+}
+
+.gradient {
+  background: linear-gradient(165.92deg, #3C3C3C 55.73%, #9A9797 121.24%);
+}
+
+.primary-text {
+  color: var(--primary-text);
+}
+
+.secondary-text {
+  color: var(--secondary-text);
+}
+
+.primary-red {
+  background-color: var(--primary-red);
+}
+
+.action-blue {
+  color: var(--action-blue);
+}
+
+
+
+/* Grid styles */
+kendo-grid-filter-menu-container {
+    :is(kendo-dropdownlist.k-filter-and) {
+      display: none !important;
+    }
+    
+    :is(kendo-grid-string-filter-menu-input,
+        kendo-grid-numeric-filter-menu-input,
+        kendo-grid-date-filter-menu-input):nth-child(3) {
+      display: none !important;
+    }
+    }
+

@@ -1,0 +1,8 @@
+.confirm-delete-btn:hover {
+    background-color: var(--primary-red-hover);
+    color: var(--primary-text);
+}
+
+.btn-close {
+    background-color: var(--primary-red);
+}

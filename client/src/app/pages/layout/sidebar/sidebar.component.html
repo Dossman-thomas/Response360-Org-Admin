@@ -1,0 +1,31 @@
+<div class="sidebar gradient" [ngClass]="{ collapsed: isCollapsed }">
+  <button class="toggle-btn" (click)="toggleSidebar()">
+    <i
+      class="fa primary-text"
+      [ngClass]="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"
+    ></i>
+  </button>
+
+  <h2 *ngIf="!isCollapsed" class="px-4 mb-4 primary-text">Super Admin</h2>
+
+  <ul class="menu-items">
+    <li>
+      <button routerLink="/super-admin-dashboard" routerLinkActive="active">
+        <i *ngIf="isCollapsed" class="fa-solid fa-table-columns"></i>
+        <span *ngIf="!isCollapsed">Super Admin Dashboard</span>
+      </button>
+    </li>
+    <li>
+      <button routerLink="/manage-organizations" routerLinkActive="active">
+        <i *ngIf="isCollapsed" class="fa fa-building"></i>
+        <span *ngIf="!isCollapsed">Manage Organizations</span>
+      </button>
+    </li>
+    <li>
+      <button routerLink="/admin-my-account" routerLinkActive="active">
+        <i *ngIf="isCollapsed" class="fa fa-plus-circle"></i>
+        <span *ngIf="!isCollapsed">My Account</span>
+      </button>
+    </li>
+  </ul>
+</div>

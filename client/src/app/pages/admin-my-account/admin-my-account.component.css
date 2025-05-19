@@ -1,0 +1,42 @@
+.responsive-modal {
+    width: 100%;
+    max-width: 95%;
+    /* For very small screens */
+} 
+
+
+/* Media queries */
+
+@media (min-width: 500px) {
+    .responsive-modal {
+        max-width: 470px;
+        /* Small devices */
+    }
+
+    .input-group-text {
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
+    }
+}
+
+@media (min-width: 768px) {
+    .responsive-modal {
+        max-width: 600px;
+        /* Medium devices */
+    }
+
+}
+
+@media (min-width: 990px) {
+    .responsive-modal {
+        max-width: 700px;
+        /* Large devices */
+    }
+
+    .input-group-text {
+        white-space: nowrap;
+        word-break: break-word;
+        text-align: center;
+    }
+}
