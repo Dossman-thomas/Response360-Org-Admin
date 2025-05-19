@@ -14,12 +14,12 @@ export class AuthService {
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
   // The URL for the authentication API
-  private baseUrl = `${environment.backendUrl}/auth/super-admin`;
+  private baseUrl = `${environment.backendUrl}/auth`;
 
   constructor(
     private http: HttpClient,
     private cryptoService: CryptoService,
-    private router: Router,
+    private router: Router
   ) {
     this.checkInitialAuthState();
     window.addEventListener('popstate', this.handlePopStateEvent.bind(this));
@@ -34,7 +34,7 @@ export class AuthService {
     const token = localStorage.getItem('token');
     if (!token) {
       this.isLoggedInSubject.next(false); // Update the subject if the token is missing
-      this.router.navigate(['/super-admin-login']);
+      this.router.navigate(['/org-admin-login']);
     }
   }
 
@@ -42,43 +42,61 @@ export class AuthService {
     this.isLoggedInSubject.next(state);
   }
 
-  login(user_email: string, user_password: string, rememberMe: boolean) {
+  login(
+    user_email: string,
+    user_password: string,
+    user_confirm_password: string,
+    rememberMe: boolean
+  ) {
     const encryptedPayload = this.cryptoService.Encrypt({
       user_email,
       user_password,
+      user_confirm_password,
       rememberMe,
     });
-  
-    return this.http.post<any>(
-      `${this.baseUrl}/login`,
-      { payload: encryptedPayload },
-      { headers: getHeaders() }
-    ).pipe(
-      catchError((error) => {
-        const backendError = error?.error;
-  
-        // Check for specific rate-limit code
-        if (backendError?.code === 'TOO_MANY_ATTEMPTS') {
-          return throwError(() => new Error('Too many login attempts. Please try again in 15 minutes.'));
-        }
-  
-        // Handle other errors generically
-        return throwError(() => new Error(backendError?.message || 'Login failed. Please try again.'));
-      })
-    );
+
+    return this.http
+      .post<any>(
+        `${this.baseUrl}/org-admin-login`,
+        { payload: encryptedPayload },
+        { headers: getHeaders() }
+      )
+      .pipe(
+        catchError((error) => {
+          const backendError = error?.error;
+
+          // Check for specific rate-limit code
+          if (backendError?.code === 'TOO_MANY_ATTEMPTS') {
+            return throwError(
+              () =>
+                new Error(
+                  'Too many login attempts. Please try again in 15 minutes.'
+                )
+            );
+          }
+
+          // Handle other errors generically
+          return throwError(
+            () =>
+              new Error(
+                backendError?.message || 'Login failed. Please try again.'
+              )
+          );
+        })
+      );
   }
-  
 
   logout() {
     // Clear localStorage and cookies
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
+    localStorage.removeItem('orgId')
 
     // Update authentication state
     this.isLoggedInSubject.next(false);
 
     // Navigate to login page after logout
-    this.router.navigate(['/super-admin-login']);
+    this.router.navigate(['/org-admin-login']);
   }
 
   isAuthenticated(): boolean {
