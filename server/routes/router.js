@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { commonRouter } from './common.route.js';
-import { superAdminRouter } from './super-admin.route.js';
 import { authRouter } from './auth.route.js';
 import { organizationRouter } from './organization.route.js';
 import { imageUploadRouter } from './imageUpload.route.js';
