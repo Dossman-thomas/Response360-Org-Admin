@@ -18,9 +18,9 @@ const routes: Routes = [
     component: LayoutComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: '', redirectTo: '/super-admin-login', pathMatch: 'full' },
+      { path: '', redirectTo: '/org-admin-login', pathMatch: 'full' },
       {
-        path: 'super-admin-dashboard',
+        path: 'org-admin-dashboard',
         component: AdminDashboardComponent,
         canActivate: [AuthGuard],
       },
@@ -42,10 +42,10 @@ const routes: Routes = [
     ],
   },
   { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'super-admin-login', component: LoginComponent },
+  { path: 'org-admin-login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'not-found', component: NotFoundComponent },
-  { path: '**', redirectTo: '/super-admin-login' },
+  { path: '**', redirectTo: '/org-admin-login' },
 
 ];
 

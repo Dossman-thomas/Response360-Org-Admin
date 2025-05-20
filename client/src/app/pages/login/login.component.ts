@@ -13,8 +13,10 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
+  confirmPassword: string = '';
   rememberMe: boolean = false;
   showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -27,7 +29,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // Check if the user is already authenticated and redirect to the dashboard if true
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/super-admin-dashboard']);
+      this.router.navigate(['/org-admin-dashboard']);
       return;
     }
 
@@ -51,16 +53,17 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     this.authService
-      .login(this.email, this.password, this.rememberMe)
+      .login(this.email, this.password, this.confirmPassword, this.rememberMe)
       .subscribe({
         next: (response) => {
           const decrypted = this.cryptoService.Decrypt(response.data);
 
-          const { token, userId } = decrypted;
+          const { token, userId, orgId } = decrypted;
 
           // Store token and user ID
           localStorage.setItem('token', token);
           localStorage.setItem('userId', userId);
+          localStorage.setItem('orgId', orgId);
 
           const encryptedEmail = this.cryptoService.Encrypt(this.email);
           const encryptedPassword = this.cryptoService.Encrypt(this.password);
@@ -80,7 +83,7 @@ export class LoginComponent implements OnInit {
           this.authService.setLoggedInState(true);
 
           this.toastr.success('Logged in successfully!');
-          this.router.navigate(['/super-admin-dashboard']);
+          this.router.navigate(['/org-admin-dashboard']);
         },
         error: (err) => {
           console.error('Login error:', err);
@@ -106,6 +109,10 @@ export class LoginComponent implements OnInit {
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   passwordPattern = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).*$'; // Regex for password

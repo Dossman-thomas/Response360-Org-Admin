@@ -1,64 +1,123 @@
 <div class="card w-25 m-5 mx-auto p-4 gradient" id="login-card">
   <h2 class="my-4 text-center text-white">Organizations Admin Login</h2>
   <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <div class="form-group">
-          <label for="email" class="text-white">Email:</label>
-          <input
-              type="email"
-              id="email"
-              class="form-control my-2"
-              required
-              [(ngModel)]="email"
-              name="email"
-              #emailInput="ngModel"
-              email
-          />
-          <div *ngIf="emailInput.invalid && emailInput.touched" class="text-danger my-2">
-              Please enter a valid email address.
-          </div>
+    <div class="form-group">
+      <label for="email" class="text-white">Email:</label>
+      <input
+        type="email"
+        id="email"
+        class="form-control my-2"
+        required
+        [(ngModel)]="email"
+        name="email"
+        #emailInput="ngModel"
+        email
+        [ngModelOptions]="{ updateOn: 'blur' }"
+      />
+      <div
+        *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)"
+        class="text-danger my-2"
+      >
+        Please enter a valid email address.
       </div>
+    </div>
 
-      <div class="form-group">
-          <label for="password" class="text-white">Password:</label>
-          <div class="input-group">
-              <input
-                  [type]="showPassword ? 'text' : 'password'"
-                  id="password"
-                  class="form-control mt-2"
-                  required
-                  [(ngModel)]="password"
-                  name="password"
-                  #passwordInput="ngModel"
-                  [pattern]="passwordPattern"
-              />
-              <span class="input-group-text eye-icon mt-2" (click)="togglePasswordVisibility()" style="cursor: pointer;">
-                  <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-              </span>
-          </div>
-          <div *ngIf="passwordInput.invalid && passwordInput.touched" class="text-danger my-2">
-              Password must include at least one special character, one uppercase letter, and one digit.
-          </div>
+    <div class="form-group">
+      <label for="password" class="text-white">Password:</label>
+      <div class="input-group">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          id="password"
+          class="form-control mt-2"
+          required
+          [(ngModel)]="password"
+          name="password"
+          #passwordInput="ngModel"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+          [pattern]="passwordPattern"
+        />
+        <span
+          class="input-group-text eye-icon mt-2"
+          (click)="togglePasswordVisibility()"
+          style="cursor: pointer"
+        >
+          <i
+            class="fa"
+            [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+          ></i>
+        </span>
       </div>
-
-      <div class="form-group form-check my-4 d-flex gap-2 align-items-center">
-          <input
-              type="checkbox"
-              class="form-check-input"
-              [(ngModel)]="rememberMe"
-              name="rememberMe"
-              id="remember-me"
-          />
-          <label class="form-check-label text-white" for="rememberMe">Remember Me</label>
+      <div
+        *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+        class="text-danger my-2"
+      >
+        Password must include at least one special character, one uppercase
+        letter, and one digit.
       </div>
+    </div>
 
-      <button type="submit" class="btn action-btn w-100 mb-2" id="login-btn" [disabled]="loginForm.invalid">
-          Login
-      </button>
-
-      <div class="text-center mt-3">
-        <a [routerLink]="['/forgot-password']" class="text-decoration-none primary-text" id="forgot-password">
-          Forgot Password? <strong>Click here to Reset</strong>
-        </a>
+    <!-- Confirm Password-->
+    <div class="form-group">
+      <label for="confirmPassword" class="text-white">Confirm Password:</label>
+      <div class="input-group">
+        <input
+          [type]="showConfirmPassword ? 'text' : 'password'"
+          id="confirmPassword"
+          class="form-control mt-2"
+          required
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+        <span
+          class="input-group-text eye-icon mt-2"
+          (click)="toggleConfirmPasswordVisibility()"
+          style="cursor: pointer"
+        >
+          <i
+            class="fa"
+            [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"
+          ></i>
+        </span>
       </div>
+      <div
+        *ngIf="confirmPassword && confirmPassword !== password && (passwordInput.dirty || passwordInput.touched)"
+        class="text-danger my-2"
+      >
+        Passwords do not match.
+      </div>
+    </div>
+
+    <div class="form-group form-check my-4 d-flex gap-2 align-items-center">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        [(ngModel)]="rememberMe"
+        name="rememberMe"
+        id="remember-me"
+      />
+      <label class="form-check-label text-white" for="rememberMe"
+        >Remember Me</label
+      >
+    </div>
+
+    <button
+      type="submit"
+      class="btn action-btn w-100 mb-2"
+      id="login-btn"
+      [disabled]="loginForm.invalid || confirmPassword !== password"
+    >
+      Login
+    </button>
+
+    <div class="text-center mt-3">
+      <a
+        [routerLink]="['/forgot-password']"
+        class="text-decoration-none primary-text"
+        id="forgot-password"
+      >
+        Forgot Password? <strong>Click here to Reset</strong>
+      </a>
+    </div>
   </form>
 </div>
