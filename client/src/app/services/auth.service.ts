@@ -45,13 +45,11 @@ export class AuthService {
   login(
     user_email: string,
     user_password: string,
-    user_confirm_password: string,
     rememberMe: boolean
   ) {
     const encryptedPayload = this.cryptoService.Encrypt({
       user_email,
       user_password,
-      user_confirm_password,
       rememberMe,
     });
 

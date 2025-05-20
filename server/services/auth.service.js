@@ -1,4 +1,4 @@
-import { UserModel } from '../database/models/index.js';
+import { UserModel, OrganizationModel } from '../database/models/index.js';
 import { encryptService, decryptService } from '../services/index.js';
 import {
   decryptSensitiveData,
@@ -56,20 +56,13 @@ export const orgAdminLoginService = async (payload) => {
       );
     }
     // Extract user_email, user_password, and rememberMe from decrypted data
-    const { user_email, user_password, user_confirm_password, rememberMe } =
+    const { user_email, user_password, rememberMe } =
       decryptedData;
 
     // Validate required fields
-    if (!user_email || !user_password || !user_confirm_password) {
+    if (!user_email || !user_password) {
       throw createError('Missing required login credentials.', 400, {
         code: 'MISSING_CREDENTIALS',
-      });
-    }
-
-    // Validate password match
-    if (user_password !== user_confirm_password) {
-      throw createError('Passwords do not match.', 401, {
-        code: 'PASSWORD_MISMATCH',
       });
     }
 
@@ -80,7 +73,13 @@ export const orgAdminLoginService = async (payload) => {
     const sequelize = UserModel.sequelize;
     const [decryptedExpr] = decryptSensitiveData('user_email', pubkey);
     const user = await UserModel.findOne({
-      attributes: ['user_id', [decryptedExpr, 'user_email'], 'user_password', 'org_id'],
+      attributes: [
+        'user_id',
+        [decryptedExpr, 'user_email'],
+        'user_password',
+        'org_id',
+        'user_status',
+      ],
       where: sequelize.where(decryptedExpr, user_email),
     });
 
@@ -101,6 +100,26 @@ export const orgAdminLoginService = async (payload) => {
     if (!isPasswordValid) {
       throw createError('Invalid credentials.', 401, {
         code: 'INVALID_CREDENTIALS',
+      });
+    }
+
+    // Check if the user is active
+    if (!user.user_status) {
+      throw createError('your user account is inactive.', 403, {
+        code: 'USER_INACTIVE',
+      });
+    }
+
+    // Fetch the organization details
+    const organization = await OrganizationModel.findOne({
+      attributes: ['org_status'],
+      where: { org_id: user.org_id }
+    }); 
+
+    // Check if the organization is active
+    if (!organization || !organization.org_status) {
+      throw createError('Your organization is inactive.', 403, {
+        code: 'ORG_INACTIVE',
       });
     }
 

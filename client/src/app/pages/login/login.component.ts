@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     this.authService
-      .login(this.email, this.password, this.confirmPassword, this.rememberMe)
+      .login(this.email, this.password, this.rememberMe)
       .subscribe({
         next: (response) => {
           const decrypted = this.cryptoService.Decrypt(response.data);
