@@ -87,11 +87,11 @@ export class LoginComponent implements OnInit {
         },
         error: (err) => {
           console.error('Login error:', err);
-        
+
           if (err.message.includes('Too many login attempts')) {
             this.toastr.error(
               'Too many login attempts. Try again in 15 minutes.',
-              'Login Blocked', // ← required to pass the options as third param
+              'Login Blocked',
               {
                 timeOut: 4000,
                 closeButton: true,
@@ -99,9 +99,39 @@ export class LoginComponent implements OnInit {
                 extendedTimeOut: 1000,
               }
             );
-            
+          } else if (err.message.includes('your user account is inactive')) {
+            this.toastr.error(
+              'Your account is inactive. Please contact your administrator.',
+              'User Inactive',
+              {
+                timeOut: 4000,
+                closeButton: true,
+                progressBar: true,
+                extendedTimeOut: 1000,
+              }
+            );
+          } else if (err.message.includes('organization is inactive')) {
+            this.toastr.error(
+              'Your organization is inactive. Please contact support.',
+              'Organization Inactive',
+              {
+                timeOut: 4000,
+                closeButton: true,
+                progressBar: true,
+                extendedTimeOut: 1000,
+              }
+            );
           } else {
-            this.toastr.error('Invalid credentials. Please try again.');
+            this.toastr.error(
+              'Invalid credentials. Please try again.',
+              'Login Failed',
+              {
+                timeOut: 4000,
+                closeButton: true,
+                progressBar: true,
+                extendedTimeOut: 1000,
+              }
+            );
           }
         },
       });

@@ -42,11 +42,7 @@ export class AuthService {
     this.isLoggedInSubject.next(state);
   }
 
-  login(
-    user_email: string,
-    user_password: string,
-    rememberMe: boolean
-  ) {
+  login(user_email: string, user_password: string, rememberMe: boolean) {
     const encryptedPayload = this.cryptoService.Encrypt({
       user_email,
       user_password,
@@ -63,17 +59,6 @@ export class AuthService {
         catchError((error) => {
           const backendError = error?.error;
 
-          // Check for specific rate-limit code
-          if (backendError?.code === 'TOO_MANY_ATTEMPTS') {
-            return throwError(
-              () =>
-                new Error(
-                  'Too many login attempts. Please try again in 15 minutes.'
-                )
-            );
-          }
-
-          // Handle other errors generically
           return throwError(
             () =>
               new Error(
@@ -88,7 +73,7 @@ export class AuthService {
     // Clear localStorage and cookies
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    localStorage.removeItem('orgId')
+    localStorage.removeItem('orgId');
 
     // Update authentication state
     this.isLoggedInSubject.next(false);
