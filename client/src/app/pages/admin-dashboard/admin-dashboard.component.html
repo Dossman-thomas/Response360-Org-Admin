@@ -1,6 +1,10 @@
 <div class="container mt-4 px-4">
-  <!-- Page Header -->
-  <h6 class="secondary-text">Dashboard ></h6>
+  <h1 class="secondary-text">Organization Admin Dashboard Coming Soon!</h1>
+</div>
+
+<!-- <div class="container mt-4 px-4"> -->
+<!-- Page Header -->
+<!-- <h6 class="secondary-text">Dashboard ></h6>
 
   <div class="d-flex gap-4 my-4">
     <div class="card p-4 mb-3 w-25 primary-red">
@@ -20,16 +24,16 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="m-0 primary-text">Recent Organizations</h5>
     <button class="btn me-4 action-btn" [routerLink]="['/manage-organizations']">View</button>
-  </div>
-  <!-- Grid -->
-  <kendo-grid
+  </div> -->
+<!-- Grid -->
+<!-- <kendo-grid
     [data]="gridData"
     [pageSize]="state.take"
     (dataStateChange)="dataStateChange($event)"
     class="me-4"
-  >
-    <!-- Column Definitions -->
-    <kendo-grid-column field="org_name" title="Name"></kendo-grid-column>
+  > -->
+<!-- Column Definitions -->
+<!-- <kendo-grid-column field="org_name" title="Name"></kendo-grid-column>
     <kendo-grid-column field="org_email" title="Email"></kendo-grid-column>
     <kendo-grid-column
       field="org_phone_number"
@@ -39,10 +43,10 @@
       <ng-template kendoGridCellTemplate let-dataItem>
         {{ dataItem.org_status ? 'Active' : 'Deactivated' }}
       </ng-template>
-    </kendo-grid-column>
+    </kendo-grid-column> -->
 
-    <!-- Action Buttons -->
-    <kendo-grid-column title="Action" [width]="150">
+<!-- Action Buttons -->
+<!-- <kendo-grid-column title="Action" [width]="150">
       <ng-template kendoGridCellTemplate let-dataItem>
         <button
           class="btn btn-sm btn-outline-primary me-2"
@@ -59,10 +63,10 @@
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
-</div>
+</div> -->
 
 <!-- Modal for Deleting User -->
-<div
+<!-- <div
   class="modal fade"
   [ngClass]="{ 'show d-block': showDeleteModal }"
   tabindex="-1"
@@ -101,4 +105,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->

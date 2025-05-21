@@ -6,16 +6,16 @@
     ></i>
   </button>
 
-  <h2 *ngIf="!isCollapsed" class="px-4 mb-4 primary-text">Super Admin</h2>
+  <h2 *ngIf="!isCollapsed" class="px-4 mb-4 primary-text">Organization Admin</h2>
 
   <ul class="menu-items">
     <li>
       <button routerLink="/super-admin-dashboard" routerLinkActive="active">
         <i *ngIf="isCollapsed" class="fa-solid fa-table-columns"></i>
-        <span *ngIf="!isCollapsed">Super Admin Dashboard</span>
+        <span *ngIf="!isCollapsed">Organization Admin Dashboard</span>
       </button>
     </li>
-    <li>
+    <!-- <li>
       <button routerLink="/manage-organizations" routerLinkActive="active">
         <i *ngIf="isCollapsed" class="fa fa-building"></i>
         <span *ngIf="!isCollapsed">Manage Organizations</span>
@@ -26,6 +26,6 @@
         <i *ngIf="isCollapsed" class="fa fa-plus-circle"></i>
         <span *ngIf="!isCollapsed">My Account</span>
       </button>
-    </li>
+    </li> -->
   </ul>
 </div>
