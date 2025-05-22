@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
@@ -11,14 +12,16 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
-  rememberMe: boolean = false;
+  loginForm!: FormGroup;
   showPassword: boolean = false;
-  showConfirmPassword: boolean = false;
+  formSubmitted: boolean = false;
+  hideErrorsWhileTyping: boolean = false;
+  passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private cookieService: CookieService,
@@ -26,124 +29,147 @@ export class LoginComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
-  ngOnInit() {
-    // Check if the user is already authenticated and redirect to the dashboard if true
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.pattern(this.emailPattern)]],
+      password: [
+        '',
+        [Validators.required, Validators.pattern(this.passwordPattern)],
+      ],
+      rememberMe: [false],
+    });
+
+    // If already logged in
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/org-admin-dashboard']);
       return;
     }
 
-    // Check for stored credentials in cookies and populate the fields
+    // Populate form from cookies if present
     const storedEmail = this.cookieService.get('email');
     const storedPassword = this.cookieService.get('password');
     const storedRememberMe = this.cookieService.get('rememberMe');
 
     if (storedEmail) {
-      this.email = this.cryptoService.Decrypt(storedEmail);
+      this.loginForm.patchValue({
+        email: this.cryptoService.Decrypt(storedEmail),
+      });
     }
 
     if (storedPassword) {
-      this.password = this.cryptoService.Decrypt(storedPassword);
+      this.loginForm.patchValue({
+        password: this.cryptoService.Decrypt(storedPassword),
+      });
     }
 
     if (storedRememberMe) {
-      this.rememberMe = true;
+      this.loginForm.patchValue({ rememberMe: true });
     }
   }
 
-  onSubmit() {
-    this.authService
-      .login(this.email, this.password, this.rememberMe)
-      .subscribe({
-        next: (response) => {
-          const decrypted = this.cryptoService.Decrypt(response.data);
+  onSubmit(): void {
+    this.formSubmitted = true;
+    this.hideErrorsWhileTyping = false;
 
-          const { token, userId, orgId } = decrypted;
+    if (this.loginForm.invalid) {
+      // Mark all controls as touched so errors show up
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
-          // Store token and user ID
-          localStorage.setItem('token', token);
-          localStorage.setItem('userId', userId);
-          localStorage.setItem('orgId', orgId);
+    const { email, password, rememberMe } = this.loginForm.value;
 
-          const encryptedEmail = this.cryptoService.Encrypt(this.email);
-          const encryptedPassword = this.cryptoService.Encrypt(this.password);
+    this.authService.login(email, password, rememberMe).subscribe({
+      next: (response) => {
+        const decrypted = this.cryptoService.Decrypt(response.data);
+        const { token, userId, orgId } = decrypted;
 
-          // Handle "Remember Me" functionality
-          if (this.rememberMe) {
-            this.cookieService.set('email', String(encryptedEmail), 90);
-            this.cookieService.set('password', String(encryptedPassword), 90);
-            this.cookieService.set('rememberMe', 'true', 90);
-          } else {
-            this.cookieService.delete('email');
-            this.cookieService.delete('password');
-            this.cookieService.delete('rememberMe');
-          }
+        localStorage.setItem('token', token);
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('orgId', orgId);
 
-          // Update authentication state
-          this.authService.setLoggedInState(true);
+        const encryptedEmail = this.cryptoService.Encrypt(email);
+        const encryptedPassword = this.cryptoService.Encrypt(password);
 
-          this.toastr.success('Logged in successfully!');
-          this.router.navigate(['/org-admin-dashboard']);
-        },
-        error: (err) => {
-          console.error('Login error:', err);
+        if (rememberMe) {
+          this.cookieService.set('email', String(encryptedEmail), 90);
+          this.cookieService.set('password', String(encryptedPassword), 90);
+          this.cookieService.set('rememberMe', 'true', 90);
+        } else {
+          this.cookieService.delete('email');
+          this.cookieService.delete('password');
+          this.cookieService.delete('rememberMe');
+        }
 
-          if (err.message.includes('Too many login attempts')) {
-            this.toastr.error(
-              'Too many login attempts. Try again in 15 minutes.',
-              'Login Blocked',
-              {
-                timeOut: 4000,
-                closeButton: true,
-                progressBar: true,
-                extendedTimeOut: 1000,
-              }
-            );
-          } else if (err.message.includes('your user account is inactive')) {
-            this.toastr.error(
-              'Your account is inactive. Please contact your administrator.',
-              'User Inactive',
-              {
-                timeOut: 4000,
-                closeButton: true,
-                progressBar: true,
-                extendedTimeOut: 1000,
-              }
-            );
-          } else if (err.message.includes('organization is inactive')) {
-            this.toastr.error(
-              'Your organization is inactive. Please contact support.',
-              'Organization Inactive',
-              {
-                timeOut: 4000,
-                closeButton: true,
-                progressBar: true,
-                extendedTimeOut: 1000,
-              }
-            );
-          } else {
-            this.toastr.error(
-              'Invalid credentials. Please try again.',
-              'Login Failed',
-              {
-                timeOut: 4000,
-                closeButton: true,
-                progressBar: true,
-                extendedTimeOut: 1000,
-              }
-            );
-          }
-        },
-      });
+        this.authService.setLoggedInState(true);
+        this.toastr.success('Logged in successfully!');
+        this.router.navigate(['/org-admin-dashboard']);
+      },
+      error: (err) => {
+        console.error('Login error:', err);
+
+        if (err.message.includes('Too many login attempts')) {
+          this.toastr.error(
+            'Too many login attempts. Try again in 15 minutes.',
+            'Login Blocked',
+            { timeOut: 4000, closeButton: true, progressBar: true }
+          );
+        } else if (err.message.includes('your user account is inactive')) {
+          this.toastr.error(
+            'Your account is inactive. Please contact your administrator.',
+            'User Inactive',
+            { timeOut: 4000, closeButton: true, progressBar: true }
+          );
+        } else if (err.message.includes('organization is inactive')) {
+          this.toastr.error(
+            'Your organization is inactive. Please contact support.',
+            'Organization Inactive',
+            { timeOut: 4000, closeButton: true, progressBar: true }
+          );
+        } else {
+          this.toastr.error(
+            'Invalid credentials. Please try again.',
+            'Login Failed',
+            { timeOut: 4000, closeButton: true, progressBar: true }
+          );
+        }
+      },
+    });
   }
 
-  togglePasswordVisibility() {
+  // Helper to check if a control should show an error
+  shouldShowError(controlName: string): boolean {
+    const control = this.loginForm.get(controlName);
+    return (
+      this.formSubmitted &&
+      !this.hideErrorsWhileTyping &&
+      !!control &&
+      control.invalid === true
+    );
+  }
+
+  // call this on (input) event
+  onFieldInput(): void {
+    this.hideErrorsWhileTyping = true;
+  }
+
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  toggleConfirmPasswordVisibility() {
-    this.showConfirmPassword = !this.showConfirmPassword;
+  get email() {
+    return this.loginForm.get('email');
   }
 
-  passwordPattern = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).*$'; // Regex for password
+  get password() {
+    return this.loginForm.get('password');
+  }
+
+  // get confirmPassword() {
+  //   return this.loginForm.get('confirmPassword');
+  // }
+
+  get rememberMe() {
+    return this.loginForm.get('rememberMe');
+  }
 }

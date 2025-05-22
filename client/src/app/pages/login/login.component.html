@@ -1,27 +1,22 @@
 <div class="card w-25 m-5 mx-auto p-4 gradient" id="login-card">
   <h2 class="my-4 text-center text-white">Organizations Admin Login</h2>
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Email -->
     <div class="form-group">
       <label for="email" class="text-white">Email:</label>
       <input
         type="email"
         id="email"
         class="form-control my-2"
-        required
-        [(ngModel)]="email"
-        name="email"
-        #emailInput="ngModel"
-        email
-        [ngModelOptions]="{ updateOn: 'blur' }"
+        formControlName="email"
+        (input)="onFieldInput()"
       />
-      <div
-        *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)"
-        class="text-danger my-2"
-      >
+      <div *ngIf="shouldShowError('email')" class="text-danger my-2">
         Please enter a valid email address.
       </div>
     </div>
 
+    <!-- Password -->
     <div class="form-group">
       <label for="password" class="text-white">Password:</label>
       <div class="input-group">
@@ -29,12 +24,8 @@
           [type]="showPassword ? 'text' : 'password'"
           id="password"
           class="form-control mt-2"
-          required
-          [(ngModel)]="password"
-          name="password"
-          #passwordInput="ngModel"
-          [ngModelOptions]="{ updateOn: 'blur' }"
-          [pattern]="passwordPattern"
+          formControlName="password"
+          (input)="onFieldInput()"
         />
         <span
           class="input-group-text eye-icon mt-2"
@@ -47,69 +38,31 @@
           ></i>
         </span>
       </div>
-      <div
-        *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
-        class="text-danger my-2"
-      >
-        Password must include at least one special character, one uppercase
-        letter, and one digit.
+      <div *ngIf="shouldShowError('password')" class="text-danger my-2">
+        Password must be 8 characters, include at least one special character, one uppercase
+        letter, one lowercase letter, and one digit.
       </div>
     </div>
 
-    <!-- Confirm Password-->
-    <div class="form-group">
-      <label for="confirmPassword" class="text-white">Confirm Password:</label>
-      <div class="input-group">
-        <input
-          [type]="showConfirmPassword ? 'text' : 'password'"
-          id="confirmPassword"
-          class="form-control mt-2"
-          required
-          [(ngModel)]="confirmPassword"
-          name="confirmPassword"
-          [ngModelOptions]="{ updateOn: 'blur' }"
-        />
-        <span
-          class="input-group-text eye-icon mt-2"
-          (click)="toggleConfirmPasswordVisibility()"
-          style="cursor: pointer"
-        >
-          <i
-            class="fa"
-            [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"
-          ></i>
-        </span>
-      </div>
-      <div
-        *ngIf="confirmPassword && confirmPassword !== password && (passwordInput.dirty || passwordInput.touched)"
-        class="text-danger my-2"
-      >
-        Passwords do not match.
-      </div>
-    </div>
-
+    <!-- Remember Me -->
     <div class="form-group form-check my-4 d-flex gap-2 align-items-center">
       <input
         type="checkbox"
         class="form-check-input"
-        [(ngModel)]="rememberMe"
-        name="rememberMe"
         id="remember-me"
+        formControlName="rememberMe"
       />
-      <label class="form-check-label text-white" for="rememberMe"
-        >Remember Me</label
-      >
+      <label class="form-check-label text-white" for="remember-me">
+        Remember Me
+      </label>
     </div>
 
-    <button
-      type="submit"
-      class="btn action-btn w-100 mb-2"
-      id="login-btn"
-      [disabled]="loginForm.invalid || confirmPassword !== password"
-    >
+    <!-- Submit Button -->
+    <button type="submit" class="btn action-btn w-100 mb-2" id="login-btn">
       Login
     </button>
 
+    <!-- Forgot Password Link -->
     <div class="text-center mt-3">
       <a
         [routerLink]="['/forgot-password']"
