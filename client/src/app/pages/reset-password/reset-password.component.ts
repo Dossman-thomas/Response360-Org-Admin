@@ -16,6 +16,8 @@ export class ResetPasswordComponent implements OnInit {
   errorMessage = '';
   showNewPassword = false;
   showConfirmPassword = false;
+  formSubmitted = false;
+  hideErrorsWhileTyping = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,13 +27,9 @@ export class ResetPasswordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Extract the token directly from the query parameters without decoding it
     const tokenFromUrl = this.route.snapshot.queryParamMap.get('token');
-    if (tokenFromUrl) {
-      this.token = tokenFromUrl;  // Don't decode it here
-    }
+    if (tokenFromUrl) this.token = tokenFromUrl;
 
-    // Initialize the form
     this.resetPasswordForm = this.fb.group(
       {
         newPassword: [
@@ -39,15 +37,18 @@ export class ResetPasswordComponent implements OnInit {
           [
             Validators.required,
             Validators.minLength(8),
-            Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/),
+            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/),
           ],
         ],
         confirmPassword: ['', Validators.required],
       },
-      {
-        validators: [this.passwordsMatchValidator],
-      }
+      { validators: [this.passwordsMatchValidator] }
     );
+
+    // Hide errors while typing
+    this.resetPasswordForm.valueChanges.subscribe(() => {
+      if (this.formSubmitted) this.hideErrorsWhileTyping = true;
+    });
   }
 
   get newPassword(): AbstractControl | null {
@@ -64,6 +65,25 @@ export class ResetPasswordComponent implements OnInit {
     return password === confirmPassword ? null : { passwordsMismatch: true };
   }
 
+  shouldShowNewPasswordError(): boolean {
+    const control = this.newPassword;
+    return !!(
+      this.formSubmitted &&
+      control &&
+      control.invalid &&
+      !this.hideErrorsWhileTyping
+    );
+  }
+
+  shouldShowConfirmPasswordError(): boolean {
+    const control = this.confirmPassword;
+    return !!(
+      this.formSubmitted &&
+      (control?.invalid || this.resetPasswordForm.hasError('passwordsMismatch')) &&
+      !this.hideErrorsWhileTyping
+    );
+  }
+
   toggleNewPasswordVisibility(): void {
     this.showNewPassword = !this.showNewPassword;
   }
@@ -73,16 +93,25 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.resetPasswordForm.invalid) return;
+    this.formSubmitted = true;
+    this.hideErrorsWhileTyping = false;
+
+    if (this.resetPasswordForm.invalid) {
+      this.resetPasswordForm.markAllAsTouched();
+      return;
+    }
 
     this.isSubmitting = true;
     const newPassword = this.resetPasswordForm.value.newPassword;
 
     this.passwordsService.resetPassword(this.token, newPassword).subscribe({
-      next: (response) => {
+      next: () => {
         this.successMessage = 'Your password has been reset successfully.';
         this.errorMessage = '';
         this.resetPasswordForm.reset();
+        this.formSubmitted = false;
+        this.hideErrorsWhileTyping = false;
+
         setTimeout(() => {
           this.router.navigate(['/super-admin-login']);
         }, 2500);
