@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PasswordsService } from 'src/app/services/passwords.service';
 
@@ -18,6 +23,8 @@ export class ResetPasswordComponent implements OnInit {
   showConfirmPassword = false;
   formSubmitted = false;
   hideErrorsWhileTyping = false;
+  passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
   constructor(
     private fb: FormBuilder,
@@ -36,8 +43,7 @@ export class ResetPasswordComponent implements OnInit {
           '',
           [
             Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/),
+            Validators.pattern(this.passwordPattern),
           ],
         ],
         confirmPassword: ['', Validators.required],
@@ -79,7 +85,8 @@ export class ResetPasswordComponent implements OnInit {
     const control = this.confirmPassword;
     return !!(
       this.formSubmitted &&
-      (control?.invalid || this.resetPasswordForm.hasError('passwordsMismatch')) &&
+      (control?.invalid ||
+        this.resetPasswordForm.hasError('passwordsMismatch')) &&
       !this.hideErrorsWhileTyping
     );
   }
