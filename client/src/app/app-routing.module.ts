@@ -11,6 +11,7 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminMyAccountComponent } from './pages/admin-my-account/admin-my-account.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { OrgAdminProfileComponent } from './pages/org-admin-profile/org-admin-profile.component';
 
 const routes: Routes = [
   {
@@ -41,12 +42,16 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'org-admin-profile',
+    component: OrgAdminProfileComponent,
+    canActivate: [AuthGuard],
+  },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'org-admin-login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: '/org-admin-login' },
-
 ];
 
 @NgModule({

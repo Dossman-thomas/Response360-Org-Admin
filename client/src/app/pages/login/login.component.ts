@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(email, password, rememberMe).subscribe({
       next: (response) => {
         const decrypted = this.cryptoService.Decrypt(response.data);
-        const { token, userId, orgId } = decrypted;
+        const { token, userId, orgId, userRole } = decrypted;
 
         localStorage.setItem('token', token);
         localStorage.setItem('userId', userId);
@@ -103,7 +103,14 @@ export class LoginComponent implements OnInit {
 
         this.authService.setLoggedInState(true);
         this.toastr.success('Logged in successfully!');
-        this.router.navigate(['/org-admin-dashboard']);
+
+        const decryptedUserRole = this.cryptoService.Decrypt(userRole);
+
+        if (decryptedUserRole && decryptedUserRole.toLowerCase() === 'admin') {
+          this.router.navigate(['/org-admin-profile']);
+        } else {
+          this.router.navigate(['/org-admin-dashboard']);
+        }
       },
       error: (err) => {
         console.error('Login error:', err);
@@ -164,10 +171,6 @@ export class LoginComponent implements OnInit {
   get password() {
     return this.loginForm.get('password');
   }
-
-  // get confirmPassword() {
-  //   return this.loginForm.get('confirmPassword');
-  // }
 
   get rememberMe() {
     return this.loginForm.get('rememberMe');

@@ -79,6 +79,7 @@ export const orgAdminLoginService = async (payload) => {
         'user_password',
         'org_id',
         'user_status',
+        'user_role',
       ],
       where: sequelize.where(decryptedExpr, user_email),
     });
@@ -136,6 +137,7 @@ export const orgAdminLoginService = async (payload) => {
       token: encryptService(token),
       userId: encryptService(user.user_id),
       orgId: encryptService(user.org_id),
+      userRole: encryptService(user.user_role),
     };
 
     // validate encrypted payload structure
