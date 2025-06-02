@@ -1,16 +1,39 @@
-import UserModel from "./user.model.js";
-import OrganizationModel from "./organization.model.js";
+import UserModel from './user.model.js';
+import OrganizationModel from './organization.model.js';
+import CollectionModel from './collection.model.js';
+import RoleModel from './role.model.js';
 
-// Organization has many Users
-OrganizationModel.hasMany(UserModel, { 
-  foreignKey: "org_id", 
-  as: "users" 
+// ─── Organization ↔ Users ────────────────────────
+OrganizationModel.hasMany(UserModel, {
+  foreignKey: 'org_id',
+  as: 'users',
 });
 
-// User belongs to an Organization
-UserModel.belongsTo(OrganizationModel, { 
-  foreignKey: "org_id", 
-  as: "organizations" 
+UserModel.belongsTo(OrganizationModel, {
+  foreignKey: 'org_id',
+  as: 'organizations',
 });
 
-export { UserModel, OrganizationModel };
+// ─── Organization ↔ Collections ──────────────────
+OrganizationModel.hasMany(CollectionModel, {
+  foreignKey: 'org_id',
+  as: 'collections',
+});
+
+CollectionModel.belongsTo(OrganizationModel, {
+  foreignKey: 'org_id',
+  as: 'organizations',
+});
+
+// ─── User ↔ Role ─────────────────────────────────
+RoleModel.hasMany(UserModel, {
+  foreignKey: 'role_id',
+  as: 'users',
+});
+
+UserModel.belongsTo(RoleModel, {
+  foreignKey: 'role_id',
+  as: 'roles',
+});
+
+export { UserModel, OrganizationModel, CollectionModel, RoleModel };

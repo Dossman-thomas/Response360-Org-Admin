@@ -11,6 +11,7 @@ const RoleModel = sequelize.define(
     },
     role_title: {
         type: DataTypes.TEXT,
+        unique: true,
         allowNull: false,
     },
     role_description: {

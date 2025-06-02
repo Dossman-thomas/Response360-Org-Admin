@@ -32,6 +32,14 @@ const UserModel = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    role_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true, // for now — you can change to false after the migration
+      references: {
+        model: 'roles',
+        key: 'role_id',
+      },
+    },
     org_id: {
       type: DataTypes.UUID,
       references: { model: 'organizations', key: 'org_id' },
@@ -57,6 +65,9 @@ const UserModel = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: true, // Active by default
     },
+    reset_token: {
+      type: DataTypes.TEXT,
+    }
   },
   {
     freezeTableName: true,
