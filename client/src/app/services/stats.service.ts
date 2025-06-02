@@ -17,7 +17,7 @@ export class StatsService {
   // Function to get the dashboard stats
   getDashboardStats(): Observable<any> {
     return this.http
-      .get(`${this.baseUrl}/count`, { headers: getHeaders() })
+      .get(`${this.baseUrl}/org-dash-counts`, { headers: getHeaders() })
       .pipe(
         map((response: any) => {
           const decrypted = this.cryptoService.Decrypt(response.data);
