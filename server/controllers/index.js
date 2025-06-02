@@ -25,4 +25,4 @@ export { updateUserPasswordController } from './updatePassword.controller.js';
 
 export { uploadLogoController } from './imageUpload.controller.js';
 
-export { getDashboardStatsController } from './stats.controller.js';
+export { getAdminDashboardStatsController } from './orgAdminDashStats.controller.js';

@@ -1,11 +1,11 @@
-import { getDashboardStatsService } from '../services/index.js';
+import { getAdminDashboardStatsService } from '../services/index.js';
 import { response } from '../utils/index.js';
 import { messages } from '../messages/index.js';
 
-export const getDashboardStatsController = async (req, res) => {
+export const getAdminDashboardStatsController = async (req, res) => {
   try {
     // Call the service with no parameters
-    const encryptedStats = await getDashboardStatsService();
+    const encryptedStats = await getAdminDashboardStatsService();
 
     // Return successful response
     return response(res, {

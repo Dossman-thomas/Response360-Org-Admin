@@ -1,22 +1,36 @@
-import { OrganizationModel, UserModel } from '../database/models/index.js';
+import { UserModel, CollectionModel } from '../database/models/index.js';
 import { encryptService } from './index.js';
 import { createError } from '../utils/index.js';
 
-export const getDashboardStatsService = async () => {
+export const getAdminDashboardStatsService = async () => {
   try {
-    const orgCount = await OrganizationModel.count();
-    const userCount = await UserModel.count();
+    // Count users by role_id
+    const dataManagerCount = await UserModel.count({
+      where: { role_id: 3 },
+    });
 
-    // Validate the counts
-    if (typeof orgCount !== 'number' || typeof userCount !== 'number') {
+    const flingerCount = await UserModel.count({
+      where: { role_id: 4 },
+    });
+
+    // Count total number of collections in table
+    const collectionCount = await CollectionModel.count();
+
+    // Validate counts
+    if (
+      typeof dataManagerCount !== 'number' ||
+      typeof flingerCount !== 'number' ||
+      typeof collectionCount !== 'number'
+    ) {
       throw createError('Invalid count data retrieved from database', 500, {
         code: 'INVALID_STATS_DATA',
       });
     }
 
     const payload = {
-      orgCount,
-      userCount,
+      dataManagerCount,
+      flingerCount,
+      collectionCount,
     };
 
     const encryptedPayload = await encryptService(payload);

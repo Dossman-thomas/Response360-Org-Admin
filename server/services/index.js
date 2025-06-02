@@ -24,4 +24,5 @@ export { verifyPasswordService } from './verifyPassword.service.js';
 
 export { upload } from './imageUpload.service.js';
 
-export { getDashboardStatsService } from './stats.service.js';
+export { getAdminDashboardStatsService } from './orgAdminDashStats.service.js'; 
+

@@ -4,7 +4,7 @@ import { authRouter } from './auth.route.js';
 import { organizationRouter } from './organization.route.js';
 import { imageUploadRouter } from './imageUpload.route.js';
 import { userRouter } from './user.route.js';
-import { statsRouter } from './stats.route.js';
+import { AdminDashStatsRouter } from './orgAdminDashStats.route.js';
 
 export const routes = Router();
 
@@ -18,4 +18,4 @@ routes.use('/image', imageUploadRouter); // add image upload routes
 
 routes.use('/user', userRouter); // add user routes
 
-routes.use('/stats', statsRouter); // add stats routes
+routes.use('/stats', AdminDashStatsRouter); // add stats routes
