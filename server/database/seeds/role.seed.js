@@ -1,4 +1,4 @@
-import RoleModel from '../models/index.js';
+import { RoleModel } from '../models/index.js';
 
 export const seedRoles = async () => {
   await RoleModel.bulkCreate(
