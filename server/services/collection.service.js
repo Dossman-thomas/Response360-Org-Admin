@@ -53,7 +53,7 @@ export const getActiveCollectionsService = async (payload) => {
     const collectionsData = await CollectionModel.findAndCountAll({
       where: {
         org_id,
-        collection_status: 'active',
+        collection_status: true,
       },
       attributes: ['collection_id', 'collection_name', 'updated_at'],
       order: [['updated_at', 'DESC']],
