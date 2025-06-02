@@ -10,6 +10,8 @@ export {
   deleteOrganizationController,
 } from './organization.controller.js';
 
+export { getActiveCollectionsController } from '../controllers/collection.controller.js';
+
 export {
   getUserByEmailController,
   getUserByIdController,
