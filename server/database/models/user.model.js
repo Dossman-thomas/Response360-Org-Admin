@@ -1,18 +1,18 @@
-import { DataTypes } from "sequelize";
-import { sequelize } from "../../config/index.js";
-import { hashPassword } from "../../utils/index.js";
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../../config/index.js';
+import { hashPassword } from '../../utils/index.js';
 
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
 const UserModel = sequelize.define(
-  "users",
+  'users',
   {
     user_id: {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    first_name: { 
+    first_name: {
       type: DataTypes.TEXT, // encrypted
       allowNull: false,
     },
@@ -34,7 +34,7 @@ const UserModel = sequelize.define(
     },
     org_id: {
       type: DataTypes.UUID,
-      references: { model: "organizations", key: "org_id" },
+      references: { model: 'organizations', key: 'org_id' },
     },
     user_password: {
       type: DataTypes.TEXT, // Hashed password (not encrypted, just hashed)
@@ -61,9 +61,9 @@ const UserModel = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
-    createdAt: "user_created_at",
-    updatedAt: "user_updated_at",
-    deletedAt: "user_deleted_at",
+    createdAt: 'user_created_at',
+    updatedAt: 'user_updated_at',
+    deletedAt: 'user_deleted_at',
     paranoid: true, // Enables soft delete (Sequelize will ignore deleted records in queries)
   }
 );
@@ -75,7 +75,7 @@ UserModel.beforeCreate(async (user) => {
 
 // Hash password before updating if changed
 UserModel.beforeUpdate(async (user) => {
-  if (user.changed("user_password")) {
+  if (user.changed('user_password')) {
     user.user_password = await hashPassword(user.user_password);
   }
 });
@@ -90,6 +90,5 @@ UserModel.beforeDestroy(async (user) => {
 UserModel.prototype.verifyPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.user_password);
 };
-
 
 export default UserModel;

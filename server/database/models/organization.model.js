@@ -1,8 +1,8 @@
-import { DataTypes } from "sequelize";
-import { sequelize } from "../../config/index.js";
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../../config/index.js';
 
 const OrganizationModel = sequelize.define(
-  "organizations",
+  'organizations',
   {
     org_id: {
       type: DataTypes.UUID,
@@ -52,7 +52,7 @@ const OrganizationModel = sequelize.define(
       type: DataTypes.TEXT, // Encrypted
     },
     website: {
-      type: DataTypes.TEXT, 
+      type: DataTypes.TEXT,
     },
     logo: {
       type: DataTypes.STRING(5000), // URL stored as string
@@ -61,9 +61,9 @@ const OrganizationModel = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
-    createdAt: "org_created_at",
-    updatedAt: "org_updated_at",
-    deletedAt: "org_deleted_at",
+    createdAt: 'org_created_at',
+    updatedAt: 'org_updated_at',
+    deletedAt: 'org_deleted_at',
     paranoid: true, // Soft deletes
   }
 );
