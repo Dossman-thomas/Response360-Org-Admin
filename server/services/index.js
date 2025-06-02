@@ -8,6 +8,8 @@ export {
   deleteOrganizationService,
 } from './organization.service.js';
 
+export { getActiveCollectionsService } from './collection.service.js';
+
 export { orgAdminLoginService } from './auth.service.js';
 
 export { getUserByEmailService, getUserByIdService } from './user.service.js';

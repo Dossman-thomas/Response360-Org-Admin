@@ -43,6 +43,10 @@ export const messages = {
     ORGANIZATION_UPDATED: 'Organization updated successfully',
     ORGANIZATION_DELETED: 'Organization soft-deleted successfully',
   },
+  collection: {
+    COLLECTIONS_FOUND: 'Collections found',
+    COLLECTIONS_NOT_FOUND: 'No Collections found'
+  },
   encryption: {
     ENCRYPTION_SUCCESS: 'Encryption successful',
     DECRYPTION_SUCCESS: 'Decryption successful',

@@ -7,7 +7,6 @@ import {
 } from '../services/index.js';
 import { response } from '../utils/index.js';
 import { messages } from '../messages/index.js';
-import { validate as validateUuid } from 'uuid';
 
 // Controller to handle the creation of an organization
 export const createOrganizationController = async (req, res) => {
