@@ -39,8 +39,6 @@ export class AdminDashboardComponent implements OnInit {
 
   body: any = {
     page: 1,
-    sorts: null,
-    filters: null,
     limit: 5,
   };
 
