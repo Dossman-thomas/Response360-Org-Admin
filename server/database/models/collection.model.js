@@ -15,7 +15,7 @@ const CollectionModel = sequelize.define(
       allowNull: false,
     },
     collection_status: {
-      type: DataTypes.BOOLEAN, // Encrypted
+      type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true, // active by default
     },

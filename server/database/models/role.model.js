@@ -5,12 +5,12 @@ const RoleModel = sequelize.define(
   'roles',
   {
     role_id: {
-        type: DataTypes.INTEGER, // ID? 
+        type: DataTypes.INTEGER, 
         primaryKey: true,
         autoIncrement: true,
     },
     role_title: {
-        type: DataTypes.TEXT, // encrypted?
+        type: DataTypes.TEXT,
         allowNull: false,
     },
     role_description: {
@@ -23,7 +23,6 @@ const RoleModel = sequelize.define(
     createdAt: 'role_created_at',
     updatedAt: 'role_updated_at',
     deletedAt: 'role_deleted_at',
-    // paranoid: true // is this necessary?
   }
 );
 
