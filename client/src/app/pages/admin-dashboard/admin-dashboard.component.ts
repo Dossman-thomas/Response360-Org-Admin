@@ -2,19 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CryptoService } from '../../services/crypto.service';
 import { StatsService } from '../../services/stats.service';
-import { OrganizationService } from '../../services/organization.service';
+import { CollectionService } from 'src/app/services/collection.service';
 import { State } from '@progress/kendo-data-query';
 import { DataStateChangeEvent } from '@progress/kendo-angular-grid';
 
 // Utils
-import {
-  loadOrgDetails,
-  navToEditOrg,
-  handleDeleteOrg,
-  handleCancelDelete,
-  handleConfirmDelete,
-} from '../../utils/utils/organization.utils';
-import { buildOrgReqBody } from '../../utils/utils/table.utils';
+import { loadCollectionDetails } from '../../utils/utils/collectionDetails.utils';
+import { buildCollectionReqBody } from '../../utils/utils/table.utils';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -26,13 +20,15 @@ export class AdminDashboardComponent implements OnInit {
     private router: Router,
     private cryptoService: CryptoService,
     private statsService: StatsService,
-    private organizationService: OrganizationService
+    private collectionService: CollectionService
   ) {}
 
   deleteOrganizationId: string | null = null;
   showDeleteModal: boolean = false;
-  totalUsers: number = 0;
-  totalOrganizations: number = 0;
+  orgId: string | null = null;
+  dataManagerCount: number = 0;
+  flingerCount: number = 0;
+  collectionCount: number = 0; 
 
   // Kendo Grid settings
   gridData: any = { data: [], total: 0 };
@@ -48,27 +44,43 @@ export class AdminDashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    const encryptedOrgId = localStorage.getItem('orgId');
+    this.orgId = encryptedOrgId
+      ? this.cryptoService.Decrypt(encryptedOrgId)
+      : null;
+    
+    if (!this.orgId) {
+      console.error('Missing orgId. cannot fetch collection details.');
+      return; 
+    }
+
     this.getDashboardStats();
-    this.loadOrgDetails();
+    this.loadCollectionDetails(this.orgId);
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
     this.state = state;
-    this.body = buildOrgReqBody(state, this.body);
-    this.loadOrgDetails();
+    this.body = buildCollectionReqBody(state, this.body);
+
+    if (!this.orgId) {
+      console.error('Missing orgId. Cannot fetch collection data.');
+      return;
+    }
+
+    this.loadCollectionDetails(this.orgId);
   }
 
   // Fetch organization details
-  private loadOrgDetails(): void {
-    loadOrgDetails(
-      this.organizationService,
+  private loadCollectionDetails(orgId: string): void {
+    loadCollectionDetails(
+      this.collectionService,
+      orgId,
       this.body,
       (gridData: any) => {
         this.gridData = gridData;
       },
-      (err: { message: any }) => {
+      (err) => {
         console.error('Failed to fetch organization details: ', err);
-        console.log('Error: ', err.message);
       }
     );
   }
@@ -77,48 +89,13 @@ export class AdminDashboardComponent implements OnInit {
   getDashboardStats(): void {
     this.statsService.getDashboardStats().subscribe({
       next: (response: any) => {
-        this.totalUsers = response.userCount || 0;
-        this.totalOrganizations = response.orgCount || 0;
+        this.dataManagerCount = response.dataManagerCount || 0;
+        this.flingerCount = response.flingerCount || 0;
+        this.collectionCount = response.collectionCount || 0;
       },
       error: (err) => {
         console.error('Failed to fetch dashboard stats:', err);
       },
     });
-  }
-
-  // Edit organization (get org_id from row data)
-  onEditOrganization(orgId: string): void {
-    navToEditOrg(orgId, this.cryptoService, this.router);
-  }
-
-  // Delete organization (get org_id from row data)
-  onDeleteOrganization(orgId: string): void {
-    handleDeleteOrg(
-      orgId,
-      (val) => (this.showDeleteModal = val),
-      (id) => (this.deleteOrganizationId = id)
-    );
-  }
-
-  private resetDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.deleteOrganizationId = null;
-  }
-
-  onConfirmDelete(): void {
-    if (typeof this.deleteOrganizationId === 'string') {
-      handleConfirmDelete(
-        this.deleteOrganizationId,
-        this.organizationService,
-        this.gridData.data,
-        (newData) => (this.gridData.data = newData),
-        () => this.resetDeleteModal()
-      );
-    }
-  }
-
-  // Cancel delete
-  onCancelDelete(): void {
-    handleCancelDelete(() => this.resetDeleteModal());
   }
 }

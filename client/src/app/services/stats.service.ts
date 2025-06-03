@@ -20,6 +20,7 @@ export class StatsService {
       .get(`${this.baseUrl}/org-dash-counts`, { headers: getHeaders() })
       .pipe(
         map((response: any) => {
+          if (!response?.data) throw new Error('Empty response data');
           const decrypted = this.cryptoService.Decrypt(response.data);
 
           return decrypted;

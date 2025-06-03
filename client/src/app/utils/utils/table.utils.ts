@@ -1,6 +1,6 @@
 import { DataStateChangeEvent } from '@progress/kendo-angular-grid';
 
-export function buildOrgReqBody (
+export function buildCollectionReqBody(
   state: DataStateChangeEvent,
   currentBody: any
 ): any {
@@ -22,7 +22,12 @@ export function buildOrgReqBody (
   // Filters
   if (state.filter?.filters?.length) {
     updatedBody.filters = state.filter.filters
-      .flatMap((item: any) => item.filters || [])
+      .flatMap(
+        (item: any) =>
+          item.filters
+            ? item.filters // composite filter group
+            : [item] // simple filter
+      )
       .map((filter: any) => ({
         field: filter.field,
         operator: filter.operator || 'contains',
