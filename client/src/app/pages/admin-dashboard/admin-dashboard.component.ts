@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CryptoService } from '../../services/crypto.service';
 import { StatsService } from '../../services/stats.service';
 import { CollectionService } from 'src/app/services/collection.service';
@@ -17,14 +16,11 @@ import { buildCollectionReqBody } from '../../utils/utils/table.utils';
 })
 export class AdminDashboardComponent implements OnInit {
   constructor(
-    private router: Router,
     private cryptoService: CryptoService,
     private statsService: StatsService,
     private collectionService: CollectionService
   ) {}
 
-  deleteOrganizationId: string | null = null;
-  showDeleteModal: boolean = false;
   orgId: string | null = null;
   dataManagerCount: number = 0;
   flingerCount: number = 0;
@@ -50,7 +46,7 @@ export class AdminDashboardComponent implements OnInit {
       : null;
     
     if (!this.orgId) {
-      console.error('Missing orgId. cannot fetch collection details.');
+      console.error('Missing orgId. Cannot fetch collections details.');
       return; 
     }
 
@@ -63,7 +59,7 @@ export class AdminDashboardComponent implements OnInit {
     this.body = buildCollectionReqBody(state, this.body);
 
     if (!this.orgId) {
-      console.error('Missing orgId. Cannot fetch collection data.');
+      console.error('Missing orgId. Cannot fetch collections data.');
       return;
     }
 
@@ -80,7 +76,7 @@ export class AdminDashboardComponent implements OnInit {
         this.gridData = gridData;
       },
       (err) => {
-        console.error('Failed to fetch organization details: ', err);
+        console.error('Failed to fetch collections details: ', err);
       }
     );
   }
