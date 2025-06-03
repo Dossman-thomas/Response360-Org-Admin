@@ -55,8 +55,8 @@ export const getActiveCollectionsService = async (payload) => {
         org_id,
         collection_status: true,
       },
-      attributes: ['collection_id', 'collection_name', 'updated_at'],
-      order: [['updated_at', 'DESC']],
+      attributes: ['collection_id', 'collection_name', 'collection_updated_at'],
+      order: [['collection_updated_at', 'DESC']],
       ...pagination({ page, limit }),
     });
 

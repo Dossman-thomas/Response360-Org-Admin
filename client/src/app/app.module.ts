@@ -17,7 +17,7 @@ import { CryptoService } from './services/crypto.service';
 // Components
 import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
-import { ManageOrganizationsComponent } from './pages/manage-organizations/manage-organizations.component';
+// import { ManageOrganizationsComponent } from './pages/manage-organizations/manage-organizations.component';
 import { OrganizationDetailsComponent } from './pages/organization-details/organization-details.component';
 import { SidebarComponent } from './pages/layout/sidebar/sidebar.component';
 import { HeaderComponent } from './pages/layout/header/header.component';
@@ -36,7 +36,7 @@ import { OrgAdminProfileComponent } from './pages/org-admin-profile/org-admin-pr
     LoginComponent,
     AdminDashboardComponent,
     AdminMyAccountComponent,
-    ManageOrganizationsComponent,
+    // ManageOrganizationsComponent,
     OrganizationDetailsComponent,
     SidebarComponent,
     HeaderComponent,
