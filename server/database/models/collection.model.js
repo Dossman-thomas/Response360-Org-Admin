@@ -11,7 +11,7 @@ const CollectionModel = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
     },
     collection_name: {
-      type: DataTypes.TEXT, // Encrypted
+      type: DataTypes.TEXT, 
       allowNull: false,
     },
     collection_status: {
