@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  updateUserController,
   getUserByEmailController,
   getUserByIdController,
   updateUserPasswordController,
@@ -7,6 +8,9 @@ import {
 import { validatePayload } from '../middleware/index.js';
 
 export const userRouter = Router();
+
+// Update user
+userRouter.post('/update', validatePayload, updateUserController); // endpoint: /api/user/update
 
 // Get user by email
 userRouter.post('/get-by-email', validatePayload, getUserByEmailController); // endpoint: /api/user/get-by-email

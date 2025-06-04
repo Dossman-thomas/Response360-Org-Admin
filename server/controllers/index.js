@@ -13,6 +13,7 @@ export {
 export { getActiveCollectionsController } from '../controllers/collection.controller.js';
 
 export {
+  updateUserController,
   getUserByEmailController,
   getUserByIdController,
 } from './user.controller.js';

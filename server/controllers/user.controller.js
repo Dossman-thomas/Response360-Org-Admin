@@ -1,6 +1,25 @@
-import { getUserByEmailService, getUserByIdService } from '../services/index.js';
+import { updateUserService, getUserByEmailService, getUserByIdService } from '../services/index.js';
 import { response } from '../utils/index.js';
 import { messages } from '../messages/index.js';
+
+// Update User
+export const updateUserController = async (req, res) => {
+  // extract user ID and payload from the request body
+  const { userId, payload } = req.body; 
+  try {
+    await updateUserService(userId, payload);
+    return response(res, {
+      statusCode: 200,
+      message: messages.user.USER_UPDATED,
+    });
+  } catch (error) {
+    console.error('Error in updateUserController:', error);
+    return response(res, {
+      statusCode: error.status || 500,
+      message: error.message || messages.general.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
 
 // Get User by Email
 export const getUserByEmailController = async (req, res) => {

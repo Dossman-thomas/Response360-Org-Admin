@@ -93,7 +93,7 @@ export const updateOrganizationController = async (req, res) => {
   try {
     // Validate the incoming request data
     const { payload } = req.body;
-    const { orgId } = req.params; // Get the organization ID from the URL params
+    const { orgId } = payload; // orgId is coming from the decrypted payload
 
     // Call the updateOrganizationService to handle the update logic
     await updateOrganizationService(orgId, payload);
