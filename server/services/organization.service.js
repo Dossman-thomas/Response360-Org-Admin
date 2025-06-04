@@ -198,8 +198,12 @@ export const getAllOrganizationsService = async (payload) => {
 };
 
 // Get Organization By ID Service
-export const getOrganizationByIdService = async (orgId) => {
+export const getOrganizationByIdService = async (payload) => {
   try {
+    const decryptedPayload = await decryptService(payload);
+
+    const { orgId } = decryptedPayload;
+
     // Validate orgId
     if (!orgId || !isUuid(orgId)) {
       throw createError('Invalid organization ID.', 400, {

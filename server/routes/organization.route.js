@@ -29,12 +29,11 @@ organizationRouter.post(
 ); // endpoint: /api/organization/read
 
 // Read an organization by ID
-organizationRouter.get(
-  '/read/:encryptedOrgId',
-  decryptOrgIdParam,
-  validateOrgId,
+organizationRouter.post(
+  '/read-by-id',
+  validatePayload,
   getOrganizationByIdController
-); // endpoint: /api/organization/read/:encryptedOrgId
+); // endpoint: /api/organization/read-by-id
 
 // Update an organization
 organizationRouter.put(

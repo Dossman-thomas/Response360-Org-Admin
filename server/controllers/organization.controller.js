@@ -62,17 +62,16 @@ export const getAllOrganizationsController = async (req, res) => {
 // Controller to handle the reading of an organization by ID
 export const getOrganizationByIdController = async (req, res) => {
   try {
-    const { orgId } = req.params;
+    const { payload } = req.body;
 
-    const encryptedOrgData = await getOrganizationByIdService(orgId);
-
-    // Check if organization was found
-    if (!encryptedOrgData) {
+    if (!payload) {
       return response(res, {
-        statusCode: 404,
-        message: messages.organization.ORGANIZATION_NOT_FOUND,
+        statusCode: 400,
+        message: messages.organization.INVALID_ORGANIZATION_ID,
       });
     }
+
+    const encryptedOrgData = await getOrganizationByIdService(payload);
 
     return response(res, {
       statusCode: 200,
