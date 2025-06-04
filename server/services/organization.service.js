@@ -322,7 +322,7 @@ export const updateOrganizationService = async (orgId, payload) => {
     }
 
     // Encrypt sensitive data
-    const { orgName, orgEmail, orgPhone, registeredAddress, website, logo } =
+    const { orgName, orgEmail, registeredAddress, website } =
       encryptFields(orgData, pubkey);
 
     // Step 3: Update the organization
@@ -330,13 +330,9 @@ export const updateOrganizationService = async (orgId, payload) => {
       {
         org_name: orgName,
         org_email: orgEmail,
-        org_phone_number: orgPhone,
         org_type: orgData.orgType,
-        jurisdiction: orgData.jurisdictionSize,
         org_address: registeredAddress,
         website: website,
-        logo: logo,
-        org_status: orgData.status === 'Disabled' ? false : true,
         org_updated_at: new Date(),
         org_updated_by: orgData.decryptedUserId,
       },

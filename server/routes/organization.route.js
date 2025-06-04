@@ -38,12 +38,10 @@ organizationRouter.get(
 
 // Update an organization
 organizationRouter.put(
-  '/update/:encryptedOrgId',
+  '/update',
   validatePayload,
-  decryptOrgIdParam,
-  validateOrgId,
   updateOrganizationController
-); // endpoint: /api/organization/update/:encryptedOrgId
+); // endpoint: /api/organization/update
 
 // Delete an organization
 organizationRouter.delete(
