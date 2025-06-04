@@ -5,7 +5,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { LayoutComponent } from './pages/layout/layout/layout.component';
 import { LoginComponent } from './pages/login/login.component';
 // import { ManageOrganizationsComponent } from './pages/manage-organizations/manage-organizations.component';
-import { OrganizationDetailsComponent } from './pages/organization-details/organization-details.component';
+// import { OrganizationDetailsComponent } from './pages/organization-details/organization-details.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
@@ -30,11 +30,11 @@ const routes: Routes = [
       //   component: ManageOrganizationsComponent,
       //   canActivate: [AuthGuard],
       // },
-      {
-        path: 'organization-details',
-        component: OrganizationDetailsComponent,
-        canActivate: [AuthGuard],
-      },
+      // {
+      //   path: 'organization-details',
+      //   component: OrganizationDetailsComponent,
+      //   canActivate: [AuthGuard],
+      // },
       {
         path: 'admin-my-account',
         component: AdminMyAccountComponent,

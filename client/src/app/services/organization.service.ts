@@ -112,20 +112,19 @@ export class OrganizationService {
 
   // Read a single organization by ID
   getOrganizationById(orgId: string): Observable<any> {
-    // Encode encrypted orgId to make it safe for URL
-    const encodedOrgId = encodeURIComponent(orgId);
+    // Encrypt the payload
+    const encryptedPayload = this.cryptoService.Encrypt({ orgId });
 
-    // Send the encrypted ID to the backend
     return this.http
-      .get<any>(`${this.baseUrl}/read/${encodedOrgId}`, {
-        headers: getHeaders(),
-      })
+      .post<any>(
+        `${this.baseUrl}/read-by-id`,
+        { payload: encryptedPayload },
+        { headers: getHeaders() }
+      )
       .pipe(
         map((response) => {
-          // Assuming the encrypted data is in response.data
+          // Decrypt the response data
           const decryptedData = this.cryptoService.Decrypt(response.data);
-
-          // Now return the decrypted data
           return decryptedData;
         })
       );
@@ -139,10 +138,7 @@ export class OrganizationService {
     orgPhone: string,
     registeredAddress: string,
     orgType: string,
-    jurisdictionSize: string,
-    website: string,
-    status: string,
-    logo?: string
+    website: string
   ): Observable<any> {
     // retrieve logged in user's ID from local storage
     const userId = localStorage.getItem('userId');
@@ -153,27 +149,18 @@ export class OrganizationService {
       orgName,
       orgEmail,
       orgPhone,
-      registeredAddress,
       orgType,
-      jurisdictionSize,
+      registeredAddress,
       website,
-      status,
       decryptedUserId,
     };
 
-    if (logo !== undefined) {
-      payload.logo = logo;
-    }
-
     const encryptedPayload = this.cryptoService.Encrypt(payload);
-
-    // Encode encrypted orgId to make it safe for URL
-    const encodedOrgId = encodeURIComponent(orgId);
 
     // Send the encrypted payload to the backend and handle errors
     return this.http
       .put<any>(
-        `${this.baseUrl}/update/${encodedOrgId}`,
+        `${this.baseUrl}/update`,
         { payload: encryptedPayload },
         { headers: getHeaders() }
       )
@@ -225,12 +212,9 @@ export class OrganizationService {
     const encodedOrgId = encodeURIComponent(orgIdString);
 
     // Send the encrypted orgId in the URL and the encrypted payload in the body
-    return this.http.delete<any>(
-      `${this.baseUrl}/delete/${encodedOrgId}`,
-      {
-        headers: getHeaders(),
-        body: { payload: encryptedPayload },
-      }
-    );
+    return this.http.delete<any>(`${this.baseUrl}/delete/${encodedOrgId}`, {
+      headers: getHeaders(),
+      body: { payload: encryptedPayload },
+    });
   }
 }

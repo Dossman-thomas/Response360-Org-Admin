@@ -13,6 +13,10 @@ export class UserService {
   private baseUrl = `${environment.backendUrl}/user`;
   constructor(private http: HttpClient, private cryptoService: CryptoService) {}
 
+  // updateUser(userId: string, userData: any): Observable<any> {
+
+  // }
+
   getUserByEmail(userEmail: string): Observable<any> {
     const payload = { user_email: userEmail };
     const encryptedPayload = this.cryptoService.Encrypt(payload);
