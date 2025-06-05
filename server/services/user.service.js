@@ -22,71 +22,43 @@ if (!pubkey) {
 }
 
 // Update a user
-export const updateUserService = async (userId, payload) => {
-  try {
-    // Validate user ID
-    if (!userId || !isUuid(userId)) {
-      throw createError('Invalid user ID.', 400, {
-        code: 'INVALID_USER_ID',
-      });
-    }
+export const updateUserService = async (payload) => {
+  const decrypted = await decryptService(payload);
+  const { userId, updatedBy, first_name, last_name, user_phone_number, user_role } = decrypted;
 
-    // Decrypt the incoming payload
-    const userData = await decryptService(payload);
+  if (!userId || !isUuid(userId)) {
+    throw createError('Invalid user ID.', 400, { code: 'INVALID_USER_ID' });
+  }
 
-    if (!userData) {
-      throw createError('Failed to decrypt user data.', 400, {
-        code: 'DECRYPTION_FAILED',
-      });
-    }
+  if (!updatedBy || !isUuid(updatedBy)) {
+    throw createError('Missing or invalid updatedBy ID.', 400, { code: 'INVALID_UPDATED_BY' });
+  }
 
-    // Encrypt sensitive fields
-    const firstName = userData.first_name
-      ? encryptSensitiveData(userData.first_name, pubkey)
-      : undefined;
-    const lastName = userData.last_name
-      ? encryptSensitiveData(userData.last_name, pubkey)
-      : undefined;
-    const phone = userData.user_phone_number
-      ? encryptSensitiveData(userData.user_phone_number, pubkey)
-      : undefined;
+  const updateData = {
+    ...(first_name && { first_name: encryptSensitiveData(first_name, pubkey) }),
+    ...(last_name && { last_name: encryptSensitiveData(last_name, pubkey) }),
+    ...(user_phone_number && { user_phone_number: encryptSensitiveData(user_phone_number, pubkey) }),
+    ...(user_role && { user_role }),
+    user_updated_by: updatedBy,
+    user_updated_at: new Date(),
+  };
 
-    // Build update object
-    const updateData = {
-      ...(firstName && { first_name: firstName }),
-      ...(lastName && { last_name: lastName }),
-      ...(phone && { user_phone_number: phone }),
-      ...(userData.user_role && { user_role: userData.user_role }),
-      user_updated_by: userData.decryptedUserId, // Provided by frontend via context
-      user_updated_at: new Date(),
-    };
+  const [rowsAffected] = await UserModel.update(updateData, {
+    where: {
+      user_id: userId,
+      user_deleted_at: null,
+    },
+  });
 
-    // Run the update
-    const [rowsAffected] = await UserModel.update(updateData, {
-      where: {
-        user_id: userId,
-        user_deleted_at: null,
-      },
-    });
-
-    if (rowsAffected === 0) {
-      throw createError('User not found or already deleted.', 404, {
-        code: 'USER_NOT_FOUND',
-      });
-    }
-
-    return;
-  } catch (error) {
-    console.error('Error in updateUserService:', error);
-    if (error.parent) {
-      console.error('DB Error:', error.parent);
-    }
-    throw createError('Failed to update user.', 500, {
-      code: 'USER_UPDATE_FAILED',
-      log: true,
+  if (rowsAffected === 0) {
+    throw createError('User not found or already deleted.', 404, {
+      code: 'USER_NOT_FOUND',
     });
   }
+
+  return;
 };
+
 
 // Get user by Email
 export const getUserByEmailService = async (payload) => {

@@ -10,6 +10,8 @@ import { validatePayload } from '../middleware/index.js';
 export const userRouter = Router();
 
 // Update user
+// This endpoint is used for both self-updates and admin-updates.
+// userId and updatedBy must be sent in the encrypted payload.
 userRouter.post('/update', validatePayload, updateUserController); // endpoint: /api/user/update
 
 // Get user by email

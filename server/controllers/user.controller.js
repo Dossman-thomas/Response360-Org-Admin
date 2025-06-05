@@ -5,9 +5,9 @@ import { messages } from '../messages/index.js';
 // Update User
 export const updateUserController = async (req, res) => {
   // extract user ID and payload from the request body
-  const { userId, payload } = req.body; 
+  const { payload } = req.body; 
   try {
-    await updateUserService(userId, payload);
+    await updateUserService(payload);
     return response(res, {
       statusCode: 200,
       message: messages.user.USER_UPDATED,

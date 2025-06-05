@@ -146,6 +146,7 @@ export class OrganizationService {
 
     // Encrypt the form data into a single payload
     const payload: any = {
+      orgId,
       orgName,
       orgEmail,
       orgPhone,
