@@ -64,13 +64,6 @@ export const getOrganizationByIdController = async (req, res) => {
   try {
     const { payload } = req.body;
 
-    if (!payload) {
-      return response(res, {
-        statusCode: 400,
-        message: messages.organization.INVALID_ORGANIZATION_ID,
-      });
-    }
-
     const encryptedOrgData = await getOrganizationByIdService(payload);
 
     return response(res, {
@@ -93,17 +86,8 @@ export const updateOrganizationController = async (req, res) => {
     // Validate the incoming request data
     const { payload } = req.body;
 
-    if (!payload || !payload.orgId) {
-      return response(res, {
-        statusCode: 400,
-        message: 'Missing required payload data.',
-      });
-    }
-
-    const { orgId } = payload; // orgId is coming from the decrypted payload
-
     // Call the updateOrganizationService to handle the update logic
-    await updateOrganizationService(orgId, payload);
+    await updateOrganizationService(payload);
 
     // Return the successful response
     return response(res, {

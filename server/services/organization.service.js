@@ -200,6 +200,7 @@ export const getAllOrganizationsService = async (payload) => {
 // Get Organization By ID Service
 export const getOrganizationByIdService = async (payload) => {
   try {
+
     const decryptedPayload = await decryptService(payload);
 
     const { orgId } = decryptedPayload;
@@ -295,16 +296,9 @@ export const getOrganizationByIdService = async (payload) => {
 };
 
 // Update Organization Service
-export const updateOrganizationService = async (orgId, payload) => {
+export const updateOrganizationService = async (payload) => {
   try {
-    // Validate orgId
-    if (!orgId || !isUuid(orgId)) {
-      throw createError('Invalid organization ID.', 400, {
-        code: 'INVALID_ORG_ID',
-      });
-    }
-
-    // Decrypt the incoming data
+    
     const orgData = await decryptService(payload);
 
     if (!orgData) {
@@ -313,37 +307,57 @@ export const updateOrganizationService = async (orgId, payload) => {
       });
     }
 
-    const decryptedOrgEmail = orgData.orgEmail;
+    const {
+      orgId,
+      orgName,
+      orgEmail,
+      orgPhone,
+      registeredAddress,
+      orgType,
+      website,
+      decryptedUserId,
+    } = orgData;
+
+    if (!orgId || !isUuid(orgId)) {
+      throw createError('Invalid organization ID.', 400, {
+        code: 'INVALID_ORG_ID',
+      });
+    }
 
     // Check for duplicate email (excluding this org)
-    const dupErrors = await checkDupEmailsOnUpdateOrg(orgId, decryptedOrgEmail);
-
-    // If there are errors, throw them
+    const dupErrors = await checkDupEmailsOnUpdateOrg(orgId, orgEmail);
     if (dupErrors.orgEmail) {
       throw createError(dupErrors.orgEmail, 400, {
         code: 'DUPLICATE_EMAIL',
       });
     }
 
-    // Encrypt sensitive data
-    const { orgName, orgEmail, registeredAddress, website } =
-      encryptFields(orgData, pubkey);
-
-    // Step 3: Update the organization
-    const [rowsAffected] = await OrganizationModel.update(
-      {
-        org_name: orgName,
-        org_email: orgEmail,
-        org_type: orgData.orgType,
-        org_address: registeredAddress,
-        website: website,
-        org_updated_at: new Date(),
-        org_updated_by: orgData.decryptedUserId,
-      },
-      { where: { org_id: orgId } }
+    // Encrypt sensitive fields
+    const encryptedFields = encryptFields(
+      { orgName, orgEmail, orgPhone, registeredAddress, website },
+      pubkey
     );
 
-    // If no organization was found
+    // Update
+    const [rowsAffected] = await OrganizationModel.update(
+      {
+        org_name: encryptedFields.orgName,
+        org_email: encryptedFields.orgEmail,
+        org_phone: encryptedFields.orgPhone,
+        org_type: orgType,
+        org_address: encryptedFields.registeredAddress,
+        website: encryptedFields.website,
+        org_updated_at: new Date(),
+        org_updated_by: decryptedUserId,
+      },
+      {
+        where: {
+          org_id: orgId,
+          org_deleted_at: null,
+        },
+      }
+    );
+
     if (rowsAffected === 0) {
       throw createError('Organization not found.', 404, {
         code: 'ORG_NOT_FOUND',
@@ -353,9 +367,8 @@ export const updateOrganizationService = async (orgId, payload) => {
     return;
   } catch (error) {
     console.error('Error in updateOrganizationService:', error);
-    if (error.parent) {
-      console.error('Detailed DB Error:', error.parent);
-    }
+    if (error.parent) console.error('DB Error:', error.parent);
+
     throw createError('Failed to update organization.', 500, {
       code: 'ORG_UPDATE_FAILED',
       log: true,

@@ -138,13 +138,9 @@ export class OrganizationService {
     orgPhone: string,
     registeredAddress: string,
     orgType: string,
-    website: string
+    website: string,
+    decryptedUserId: string // explicitly passed in
   ): Observable<any> {
-    // retrieve logged in user's ID from local storage
-    const userId = localStorage.getItem('userId');
-    const decryptedUserId = userId ? this.cryptoService.Decrypt(userId) : null;
-
-    // Encrypt the form data into a single payload
     const payload: any = {
       orgId,
       orgName,
@@ -158,32 +154,28 @@ export class OrganizationService {
 
     const encryptedPayload = this.cryptoService.Encrypt(payload);
 
-    // Send the encrypted payload to the backend and handle errors
     return this.http
-      .put<any>(
+      .post<any>(
         `${this.baseUrl}/update`,
         { payload: encryptedPayload },
         { headers: getHeaders() }
       )
       .pipe(
         catchError((error) => {
-          // Check if the error is related to duplicate emails and return a structured error
-          if (error.error && error.error.message) {
-            if (
-              error.error.message.includes(
-                'Organization email is already in use'
-              )
-            ) {
-              return throwError(() => ({
-                error: {
-                  message: 'Organization email is already in use.',
-                  field: 'orgEmail',
-                },
-              }));
-            }
+          if (
+            error.error?.message?.includes(
+              'Organization email is already in use'
+            )
+          ) {
+            return throwError(() => ({
+              error: {
+                message: 'Organization email is already in use.',
+                field: 'orgEmail',
+              },
+            }));
           }
-          // For other errors, throw the error as-is
-          return throwError(() => error);
+
+          return throwError(() => error.error || { message: 'Update failed.' });
         })
       );
   }

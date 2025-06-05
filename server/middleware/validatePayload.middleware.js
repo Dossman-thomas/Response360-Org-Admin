@@ -4,7 +4,7 @@ import { messages } from '../messages/index.js';
 export const validatePayload = (req, res, next) => {
   const { payload } = req.body;
 
-  if (!payload) {
+  if (!payload || typeof payload !== 'string' ) {
     return response(res, {
       statusCode: 400,
       message: messages.general.NO_PAYLOAD,
