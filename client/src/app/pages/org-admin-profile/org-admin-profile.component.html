@@ -14,9 +14,7 @@
       </div>
 
       <div class="row mb-3 align-items-center">
-        <label class="col-sm-3 text-white"
-          >Admin Last Name:</label
-        >
+        <label class="col-sm-3 text-white">Admin Last Name:</label>
         <div class="col-sm-9">
           <input formControlName="lastName" type="text" class="form-control" />
         </div>
@@ -26,10 +24,10 @@
         <label class="col-sm-3 text-white">Title:</label>
         <div class="col-sm-9">
           <select formControlName="title" class="form-control">
-            <option value="" disabled selected>Select a title</option>
-            <option>Admin</option>
-            <option>Manager</option>
-            <option>Director</option>
+            <option value="" disabled>Select a title</option>
+            <option value="Admin">Admin</option>
+            <option value="Data Manager">Data Manager</option>
+            <option value="Flinger">Flinger</option>
           </select>
         </div>
       </div>
@@ -76,13 +74,14 @@
         >
         <div class="col-sm-9">
           <select formControlName="orgType" class="form-control">
-            <option value="" disabled selected>
-              Select an organization type
-            </option>
-            <option>Non-Profit</option>
-            <option>Corporate</option>
-            <option>Educational</option>
-            <option>Government</option>
+            <option value="" disabled>Select an organization type</option>
+            <option value="Emergency Management">Emergency Management</option>
+            <option value="Fire/Ems">Fire/Ems</option>
+            <option value="Law Enforcement">Law Enforcement</option>
+            <option value="Business">Business</option>
+            <option value="Hospitals">Hospitals</option>
+            <option value="Education">Education</option>
+            <option value="NGOs">NGOs</option>
           </select>
         </div>
       </div>
@@ -98,12 +97,7 @@
     <!-- Buttons -->
     <div class="d-flex justify-content-between">
       <button type="submit" class="btn action-btn w-50 me-2">Submit</button>
-      <button
-        type="button"
-        class="btn btn-secondary w-50 ms-2"
-      >
-        Skip
-      </button>
+      <button type="button" class="btn btn-secondary w-50 ms-2">Skip</button>
     </div>
   </form>
 </div>
