@@ -4,8 +4,7 @@
     Please fill up your details to complete your profile!
   </p>
 
-  <!-- <form [formGroup]="orgProfileForm" (ngSubmit)="onSubmit()"> -->
-  <form>
+  <form [formGroup]="orgProfileForm" (ngSubmit)="onSubmit()">
     <div class="d-fex m-3">
       <div class="row mb-3 align-items-center">
         <label class="col-sm-3 text-white">Admin First Name:</label>
@@ -102,7 +101,6 @@
       <button
         type="button"
         class="btn btn-secondary w-50 ms-2"
-        [routerLink]="['/org-admin-dashboard']"
       >
         Skip
       </button>
