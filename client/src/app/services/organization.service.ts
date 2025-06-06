@@ -155,7 +155,7 @@ export class OrganizationService {
     const encryptedPayload = this.cryptoService.Encrypt(payload);
 
     return this.http
-      .post<any>(
+      .put<any>(
         `${this.baseUrl}/update`,
         { payload: encryptedPayload },
         { headers: getHeaders() }

@@ -22,21 +22,21 @@ if (!pubkey) {
 }
 
 // Update a user
-export const updateUserService = async (userId, payload) => {
+export const updateUserService = async (payload) => {
   try {
-    // Validate user ID
-    if (!userId || !isUuid(userId)) {
-      throw createError('Invalid user ID.', 400, {
-        code: 'INVALID_USER_ID',
-      });
-    }
-
     // Decrypt the incoming payload
     const userData = await decryptService(payload);
 
     if (!userData) {
       throw createError('Failed to decrypt user data.', 400, {
         code: 'DECRYPTION_FAILED',
+      });
+    }
+
+    const userId = userData.userId;
+    if (!userId) {
+      throw createError('Missing user ID in decrypted payload.', 400, {
+        code: 'MISSING_USER_ID',
       });
     }
 
@@ -57,7 +57,7 @@ export const updateUserService = async (userId, payload) => {
       ...(lastName && { last_name: lastName }),
       ...(phone && { user_phone_number: phone }),
       ...(userData.user_role && { user_role: userData.user_role }),
-      user_updated_by: userData.decryptedUserId, // Provided by frontend via context
+      user_updated_by: userData.decryptedUserId,
       user_updated_at: new Date(),
     };
 
@@ -143,7 +143,6 @@ export const getUserByEmailService = async (payload) => {
     });
   }
 };
-
 
 // Get user by ID
 export const getUserByIdService = async (payload) => {
