@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CryptoService } from '../../services/crypto.service';
 import { OrganizationService } from '../../services/organization.service';
 import { UserService } from '../../services/user.service';
@@ -22,7 +23,8 @@ export class OrgAdminProfileComponent implements OnInit {
     private organizationService: OrganizationService,
     private userService: UserService,
     private cryptoService: CryptoService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -150,17 +152,21 @@ export class OrgAdminProfileComponent implements OnInit {
             next: () => {
               console.log('User and organization updated successfully!');
               this.toastr.success('Profile updated successfully!');
+              this.router.navigate(['/org-admin-dashboard']);
             },
             error: (orgErr) => {
               console.error('Organization update failed:', orgErr);
-              // Optionally: show field-specific error
             },
           });
       },
       error: (userErr) => {
         console.error('User update failed:', userErr);
-        // Optionally: show toast or error
+        this.toastr.error('Failed to update profile. Please try again later.');
       },
     });
+  }
+
+  navigateToOrgAdminDashboard(): void {
+    this.router.navigate(['/org-admin-dashboard']);
   }
 }

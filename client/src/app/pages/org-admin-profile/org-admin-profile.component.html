@@ -47,7 +47,7 @@
             <option value="Data Manager">Data Manager</option>
             <option value="Flinger">Flinger</option>
           </select>
-          <!-- <div
+          <div
             class="text-danger mt-1"
             *ngIf="
               orgProfileForm.get('title')?.touched &&
@@ -55,7 +55,7 @@
             "
           >
             Title is required.
-          </div> -->
+          </div>
         </div>
       </div>
 
@@ -160,7 +160,7 @@
             <option value="Education">Education</option>
             <option value="NGOs">NGOs</option>
           </select>
-          <!-- <div
+          <div
             class="text-danger mt-1"
             *ngIf="
               orgProfileForm.get('orgType')?.touched &&
@@ -168,7 +168,7 @@
             "
           >
             Please enter your organization's type.
-          </div> -->
+          </div>
         </div>
       </div>
 
@@ -192,7 +192,13 @@
     <!-- Buttons -->
     <div class="d-flex justify-content-between">
       <button type="submit" class="btn action-btn w-50 me-2">Submit</button>
-      <button type="button" class="btn btn-secondary w-50 ms-2">Skip</button>
+      <button
+        type="button"
+        class="btn btn-secondary w-50 ms-2"
+        (click)="navigateToOrgAdminDashboard()"
+      >
+        Skip
+      </button>
     </div>
   </form>
 </div>
