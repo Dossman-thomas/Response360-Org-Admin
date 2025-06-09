@@ -10,6 +10,15 @@
         <label class="col-sm-3 text-white">Admin First Name:</label>
         <div class="col-sm-9">
           <input formControlName="firstName" type="text" class="form-control" />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('firstName')?.touched &&
+              orgProfileForm.get('firstName')?.invalid
+            "
+          >
+            First name is required.
+          </div>
         </div>
       </div>
 
@@ -17,6 +26,15 @@
         <label class="col-sm-3 text-white">Admin Last Name:</label>
         <div class="col-sm-9">
           <input formControlName="lastName" type="text" class="form-control" />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('lastName')?.touched &&
+              orgProfileForm.get('lastName')?.invalid
+            "
+          >
+            Last name is required.
+          </div>
         </div>
       </div>
 
@@ -29,6 +47,15 @@
             <option value="Data Manager">Data Manager</option>
             <option value="Flinger">Flinger</option>
           </select>
+          <!-- <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('title')?.touched &&
+              orgProfileForm.get('title')?.invalid
+            "
+          >
+            Title is required.
+          </div> -->
         </div>
       </div>
 
@@ -42,6 +69,24 @@
             type="tel"
             class="form-control"
           />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('phoneNumber')?.touched &&
+              orgProfileForm.get('phoneNumber')?.invalid
+            "
+          >
+            <span
+              *ngIf="orgProfileForm.get('phoneNumber')?.errors?.['required']"
+            >
+              Phone number is required.
+            </span>
+            <span
+              *ngIf="orgProfileForm.get('phoneNumber')?.errors?.['pattern']"
+            >
+              Enter a valid phone number (digits, spaces, dashes).
+            </span>
+          </div>
         </div>
       </div>
 
@@ -49,6 +94,15 @@
         <label class="col-sm-3 col-form-label text-white">Address:</label>
         <div class="col-sm-9">
           <input formControlName="address" type="text" class="form-control" />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('address')?.touched &&
+              orgProfileForm.get('address')?.invalid
+            "
+          >
+            Please enter your organization's address.
+          </div>
         </div>
       </div>
 
@@ -58,6 +112,15 @@
         >
         <div class="col-sm-9">
           <input formControlName="orgName" type="text" class="form-control" />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('orgName')?.touched &&
+              orgProfileForm.get('orgName')?.invalid
+            "
+          >
+            Your organization's name is required.
+          </div>
         </div>
       </div>
 
@@ -65,6 +128,20 @@
         <label class="col-sm-3 col-form-label text-white">Website:</label>
         <div class="col-sm-9">
           <input formControlName="website" type="url" class="form-control" />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('website')?.touched &&
+              orgProfileForm.get('website')?.invalid
+            "
+          >
+            <span *ngIf="orgProfileForm.get('website')?.errors?.['required']">
+              Please enter your organization's website address.
+            </span>
+            <span *ngIf="orgProfileForm.get('website')?.errors?.['pattern']">
+              Enter a valid URL.
+            </span>
+          </div>
         </div>
       </div>
 
@@ -83,6 +160,15 @@
             <option value="Education">Education</option>
             <option value="NGOs">NGOs</option>
           </select>
+          <!-- <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('orgType')?.touched &&
+              orgProfileForm.get('orgType')?.invalid
+            "
+          >
+            Please enter your organization's type.
+          </div> -->
         </div>
       </div>
 
@@ -90,6 +176,15 @@
         <label class="col-sm-3 col-form-label text-white">Email:</label>
         <div class="col-sm-9">
           <input formControlName="email" type="email" class="form-control" />
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              orgProfileForm.get('email')?.touched &&
+              orgProfileForm.get('email')?.invalid
+            "
+          >
+            Please enter your organization's valid email address.
+          </div>
         </div>
       </div>
     </div>

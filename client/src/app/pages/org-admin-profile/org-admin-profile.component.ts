@@ -14,6 +14,8 @@ export class OrgAdminProfileComponent implements OnInit {
   orgProfileForm!: FormGroup;
   decryptedUserId!: string;
   decryptedOrgId!: string;
+  phoneNumberPattern = /^[0-9\-()+ ]+$/;
+  websitePattern = /^(https?:\/\/)?[\w\-]+(\.[\w\-]+)+([/#?]?.*)?$/;
 
   constructor(
     private fb: FormBuilder,
@@ -41,7 +43,7 @@ export class OrgAdminProfileComponent implements OnInit {
       title: ['', Validators.required],
       phoneNumber: [
         '',
-        [Validators.required, Validators.pattern(/^[0-9\-()+ ]+$/)],
+        [Validators.required, Validators.pattern(this.phoneNumberPattern)],
       ],
       address: ['', Validators.required],
       orgName: ['', Validators.required],
@@ -49,7 +51,7 @@ export class OrgAdminProfileComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(/^(https?:\/\/)?[\w\-]+(\.[\w\-]+)+([/#?]?.*)?$/),
+          Validators.pattern(this.websitePattern),
         ],
       ],
       orgType: ['', Validators.required],
