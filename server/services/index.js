@@ -13,9 +13,12 @@ export { getActiveCollectionsService } from './collection.service.js';
 export { orgAdminLoginService } from './auth.service.js';
 
 export {
+  createUserService,
+  getAllUsersService,
   updateUserService,
   getUserByEmailService,
   getUserByIdService,
+  deleteUserService,
 } from './user.service.js';
 
 export { sendResetPasswordEmailService } from './email.service.js';

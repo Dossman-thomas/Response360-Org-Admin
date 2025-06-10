@@ -149,7 +149,6 @@ export const getAllUsersService = async (payload) => {
   }
 };
 
-
 // Update a user
 export const updateUserService = async (payload) => {
   try {
