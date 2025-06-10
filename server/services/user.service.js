@@ -1,12 +1,14 @@
-import { UserModel } from '../database/models/index.js';
+import { UserModel, RoleModel } from '../database/models/index.js';
 import { env } from '../config/index.js';
 import { encryptService, decryptService } from './index.js';
 import {
   decryptFields,
+  encryptFields,
   decryptSensitiveData,
   encryptSensitiveData,
   createError,
   emailRegex,
+  generatePassword,
 } from '../utils/index.js';
 import { v4 as uuidv4, validate as isUuid } from 'uuid';
 
@@ -20,6 +22,130 @@ if (!pubkey) {
     { code: 'PUBKEY_MISSING', log: true }
   );
 }
+
+// Create a new user
+export const createUserService = async (payload) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const userData = await decryptService(payload);
+
+    if (!userData || typeof userData !== 'object') {
+      throw createError('Failed to decrypt user data.', 400, {
+        code: 'DECRYPTION_FAILED',
+      });
+    }
+
+    const {
+      firstName,
+      lastName,
+      userEmail,
+      userPhone,
+      userRole,
+      orgId,
+      decryptedUserId,
+    } = userData;
+
+    if (!firstName || !lastName || !userEmail || !userPhone || !userRole || !orgId) {
+      throw createError('Missing required user fields.', 400, {
+        code: 'INVALID_USER_DATA',
+      });
+    }
+
+    // Verify that creator's org matches orgId in payload
+    const creator = await UserModel.findOne({ where: { user_id: decryptedUserId } });
+    if (!creator) {
+      throw createError('Creator user not found.', 404);
+    }
+    if (creator.org_id !== orgId && !creator.is_super_admin) {
+      throw createError('Unauthorized to create user for this organization.', 403);
+    }
+
+    // Lookup role ID
+    const roleRecord = await RoleModel.findOne({ where: { role_title: userRole } });
+    if (!roleRecord) {
+      throw createError('Invalid user role.', 400, { code: 'INVALID_ROLE' });
+    }
+
+    const encryptedFields = encryptFields(
+      { firstName, lastName, userEmail, userPhone },
+      pubkey
+    );
+
+    await UserModel.create(
+      {
+        user_id: uuidv4(),
+        first_name: encryptedFields.firstName,
+        last_name: encryptedFields.lastName,
+        user_email: encryptedFields.userEmail,
+        user_phone_number: encryptedFields.userPhone,
+        user_role: userRole,
+        role_id: roleRecord.role_id,
+        org_id: orgId,
+        user_password: generatePassword(),
+        user_created_by: decryptedUserId,
+      },
+      { transaction }
+    );
+
+    await transaction.commit();
+    return;
+  } catch (error) {
+    console.error('Error in createUserService:', error);
+    await transaction.rollback();
+    throw createError('Failed to create user.', 500, {
+      code: 'USER_CREATION_FAILED',
+      log: true,
+    });
+  }
+};
+
+// get all users
+export const getAllUsersService = async (payload) => {
+  try {
+    if (!payload || typeof payload !== 'string') {
+      throw createError('Invalid payload.', 400, { code: 'INVALID_PAYLOAD' });
+    }
+
+    const decryptedPayload = await decryptService(payload);
+    if (!decryptedPayload || typeof decryptedPayload !== 'object') {
+      throw createError('Failed to decrypt data.', 400, {
+        code: 'DECRYPTION_FAILED',
+      });
+    }
+
+    const { page, limit, sorts, filters, searchQuery } = decryptedPayload;
+
+    const order = buildOrderClause(sorts);
+    const where = buildWhereClause({
+      filters,
+      searchQuery,
+      statusQuery: searchQuery,
+      pubkey,
+    });
+
+    const userData = await UserModel.findAndCountAll({
+      where,
+      order,
+      attributes: [
+        'user_id',
+        ...decryptFields(
+          ['first_name', 'last_name', 'user_email', 'user_phone_number'],
+          pubkey
+        ),
+        'user_role',
+      ],
+      ...pagination({ page, limit }),
+    });
+
+    return encryptService(userData);
+  } catch (error) {
+    console.error('Error in getAllUsersService:', error);
+    throw createError('Failed to retrieve users.', 500, {
+      code: 'USER_RETRIEVAL_FAILED',
+      log: true,
+    });
+  }
+};
 
 // Update a user
 export const updateUserService = async (payload) => {
@@ -194,3 +320,42 @@ export const getUserByIdService = async (payload) => {
     });
   }
 };
+
+// DELETE User (soft delete)
+export const deleteUserService = async (userId, payload) => {
+  try {
+    if (!userId || !isUuid(userId)) {
+      throw createError('Invalid user ID.', 400, { code: 'INVALID_USER_ID' });
+    }
+
+    const decrypted = await decryptService(payload);
+    if (!decrypted?.userId) {
+      throw createError('Failed to decrypt user data.', 400, {
+        code: 'DECRYPTION_FAILED',
+      });
+    }
+
+    const user = await UserModel.findOne({ where: { user_id: userId } });
+
+    if (!user) {
+      throw createError('User not found.', 404, { code: 'USER_NOT_FOUND' });
+    }
+
+    // Attach deleted_by before destroy to log who deleted
+    user.user_deleted_by = decrypted.userId;
+    await user.save();
+
+    // Soft delete: triggers beforeDestroy, sets user_status = false and deleted timestamp
+    await user.destroy();
+
+    return;
+  } catch (error) {
+    console.error('Error in deleteUserService:', error);
+    throw createError('Failed to delete user.', 500, {
+      code: 'USER_DELETE_FAILED',
+      log: true,
+    });
+  }
+};
+
+
