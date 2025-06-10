@@ -2,10 +2,15 @@
 import { Op, Sequelize } from 'sequelize';
 import { operatorMapping } from './index.js'; // Assuming you have operator mappings elsewhere
 
-export const buildWhereClause = ({ filters, searchQuery, statusQuery, pubkey }) => {
+export const buildWhereClause = ({
+  filters,
+  searchQuery,
+  statusQuery,
+  pubkey,
+}) => {
   // normalize searchQuery
   const normalizedQuery = searchQuery?.toLowerCase();
-  
+
   // map 'true' to 'Enabled' and 'false' to 'Disabled'
   const statusQueryMapped =
     normalizedQuery === 'true'
@@ -17,9 +22,9 @@ export const buildWhereClause = ({ filters, searchQuery, statusQuery, pubkey }) 
   // Build the filter part
   const filterConditions = filters?.length
     ? filters
-        .filter((filter) => filter.field.startsWith('org_'))
+        .filter((filter) => filter.field.startsWith('user_'))
         .map((filter) => {
-          if (filter.field === 'org_status') {
+          if (filter.field === 'user_status') {
             const operator = filter.operator === 'eq' ? Op.eq : Op.ne;
             return {
               [filter.field]: { [operator]: filter.value === 'true' },
@@ -27,7 +32,8 @@ export const buildWhereClause = ({ filters, searchQuery, statusQuery, pubkey }) 
           } else {
             const operator = operatorMapping[filter.operator] || Op.eq;
             const value =
-              filter.operator === 'contains' || filter.operator === 'doesnotcontain'
+              filter.operator === 'contains' ||
+              filter.operator === 'doesnotcontain'
                 ? `%${filter.value}%`
                 : filter.value;
 
@@ -51,31 +57,40 @@ export const buildWhereClause = ({ filters, searchQuery, statusQuery, pubkey }) 
           Sequelize.where(
             Sequelize.fn(
               'PGP_SYM_DECRYPT',
-              Sequelize.cast(Sequelize.col('org_name'), 'bytea'),
+              Sequelize.cast(Sequelize.col('first_name'), 'bytea'),
               pubkey
             ),
-            { [Op.like]: `%${searchQuery}%` }
+            { [Op.iLike]: `%${searchQuery}%` }
           ),
           Sequelize.where(
             Sequelize.fn(
               'PGP_SYM_DECRYPT',
-              Sequelize.cast(Sequelize.col('org_email'), 'bytea'),
+              Sequelize.cast(Sequelize.col('last_name'), 'bytea'),
               pubkey
             ),
-            { [Op.like]: `%${searchQuery}%` }
+            { [Op.iLike]: `%${searchQuery}%` }
           ),
           Sequelize.where(
             Sequelize.fn(
               'PGP_SYM_DECRYPT',
-              Sequelize.cast(Sequelize.col('org_phone_number'), 'bytea'),
+              Sequelize.cast(Sequelize.col('user_email'), 'bytea'),
               pubkey
             ),
-            { [Op.like]: `%${searchQuery}%` }
+            { [Op.iLike]: `%${searchQuery}%` }
           ),
-          ...(statusQueryMapped === 'Enabled' || statusQueryMapped === 'Disabled'
+          Sequelize.where(
+            Sequelize.fn(
+              'PGP_SYM_DECRYPT',
+              Sequelize.cast(Sequelize.col('user_phone_number'), 'bytea'),
+              pubkey
+            ),
+            { [Op.iLike]: `%${searchQuery}%` }
+          ),
+          ...(statusQueryMapped === 'Enabled' ||
+          statusQueryMapped === 'Disabled'
             ? [
                 {
-                  org_status: {
+                  user_status: {
                     [Op.eq]: statusQueryMapped === 'Enabled',
                   },
                 },
@@ -86,7 +101,13 @@ export const buildWhereClause = ({ filters, searchQuery, statusQuery, pubkey }) 
     : {};
 
   // Return the complete where clause
-  return {
-    [Op.and]: [...filterConditions, searchConditions],
+  const where = {
+    [Op.and]: [...filterConditions],
   };
+
+  if (searchConditions[Op.or]?.length) {
+    where[Op.and].push(searchConditions);
+  }
+
+  return where;
 };

@@ -9,6 +9,9 @@ import {
   createError,
   emailRegex,
   generatePassword,
+  buildOrderClause,
+  buildWhereClause,
+  pagination,
 } from '../utils/index.js';
 import { v4 as uuidv4, validate as isUuid } from 'uuid';
 
@@ -107,6 +110,7 @@ export const getAllUsersService = async (payload) => {
     }
 
     const decryptedPayload = await decryptService(payload);
+
     if (!decryptedPayload || typeof decryptedPayload !== 'object') {
       throw createError('Failed to decrypt data.', 400, {
         code: 'DECRYPTION_FAILED',
@@ -128,11 +132,9 @@ export const getAllUsersService = async (payload) => {
       order,
       attributes: [
         'user_id',
-        ...decryptFields(
-          ['first_name', 'last_name', 'user_email', 'user_phone_number'],
-          pubkey
-        ),
+        ...decryptFields(['first_name', 'last_name', 'user_email', 'user_phone_number'], pubkey),
         'user_role',
+        'user_status',
       ],
       ...pagination({ page, limit }),
     });
@@ -146,6 +148,7 @@ export const getAllUsersService = async (payload) => {
     });
   }
 };
+
 
 // Update a user
 export const updateUserService = async (payload) => {
